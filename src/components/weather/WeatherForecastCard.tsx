@@ -68,9 +68,9 @@ export function WeatherForecastCard({ latitude, longitude }: Props) {
           {carregando ? "Carregando previsão..." : "Não foi possível obter previsão. Tente novamente."}
         </div>
       ) : (
-        <div className="flex overflow-x-auto pb-2 -mx-2 px-2 snap-x snap-mandatory md:grid md:grid-cols-7 md:overflow-visible gap-2 w-full">
+        <div className="flex overflow-x-auto pb-2 -mx-2 px-2 snap-x gap-2 w-full">
           {dados.map((d) => (
-            <div key={d.dataIso} className="neu-inset rounded-xl p-2 text-center flex-shrink-0 min-w-[80px] md:min-w-0 md:w-auto snap-start flex-1">
+            <div key={d.dataIso} className="neu-inset rounded-xl p-2 text-center flex-shrink-0 w-[96px] snap-start">
               <div className="text-[10px] font-semibold text-muted-foreground uppercase">{d.diaSemana}</div>
               <div className="text-[10px] text-muted-foreground">{d.data}</div>
               <div className="text-2xl my-1">{d.emoji}</div>
