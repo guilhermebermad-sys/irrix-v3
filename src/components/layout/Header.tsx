@@ -41,11 +41,8 @@ export function Header() {
     <header className="sticky top-0 z-[1001] px-4 md:px-6 py-3 bg-background/80 backdrop-blur-sm">
       <div className="neu px-4 py-3 flex items-center gap-3 flex-wrap">
         <SidebarToggle />
-        {/* Logo dinâmico: aparece apenas em mobile ou quando a sidebar está colapsada no desktop */}
-        <div className={cn(
-          "flex items-center gap-2 transition-all duration-300",
-          desktopCollapsed ? "md:flex" : "md:hidden"
-        )}>
+        {/* Logo dinâmico: aparece apenas em mobile */}
+        <div className="flex items-center gap-2 md:hidden">
           <Logo className="h-9 w-9 object-contain" />
         </div>
         <div className="flex items-center gap-2 flex-1 flex-wrap">
