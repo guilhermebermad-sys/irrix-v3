@@ -1,49 +1,91 @@
 import { Link } from "react-router-dom";
 import { Play, Droplets, ArrowRight, CheckCircle2, AlertTriangle, Zap } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const VIDEO_SRC = "https://videos.pexels.com/video-files/4887998/4887998-uhd_2732_1440_25fps.mp4";
+const VIDEO_POSTER = "https://images.pexels.com/videos/4887998/pexels-photo-4887998.jpeg";
 
 export function Hero() {
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
+  // Parallax (desktop only)
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        // Animation start logic if needed
+    if (isMobile) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
-    }, { threshold: 0.1 });
-    if (mockupRef.current) observer.observe(mockupRef.current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile]);
+
+  // Pause video when off-screen
+  useEffect(() => {
+    if (!videoRef.current || !sectionRef.current) return;
+    const el = videoRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(sectionRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
-      {/* Cinematic Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-40' : 'opacity-0'}`}
-        >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-watering-a-large-crop-field-with-a-sprinkler-20054-large.mp4" type="video/mp4" />
-        </video>
-        {/* Dynamic Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
-        
-        {/* Animated Ripples */}
-        <div className="absolute top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-3/4 right-1/4 w-px h-px bg-secondary/20 rounded-full animate-ripples" style={{ animationDelay: '2s' }} />
+    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+      {/* Animated gradient fallback */}
+      <div
+        className={`absolute inset-0 z-0 bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900 animate-gradient-slow transition-opacity duration-1000 ${videoLoaded && !isMobile ? "opacity-0" : "opacity-100"}`}
+      />
+
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {isMobile ? (
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${VIDEO_POSTER})` }} />
+        ) : (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={VIDEO_POSTER}
+            onCanPlay={() => setVideoLoaded(true)}
+            style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
+          >
+            <source src={VIDEO_SRC} type="video/mp4" />
+            Seu navegador não suporta vídeo.
+          </video>
+        )}
       </div>
 
-      {!videoLoaded && <div className="absolute inset-0 z-[-1] hero-video-fallback" />}
+      {/* Dark green overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-emerald-950/50 to-black/70" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-16 items-center pt-20">
+      {/* Animated Ripples */}
+      <div className="absolute z-10 top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: "0s" }} />
+      <div className="absolute z-10 top-3/4 right-1/4 w-px h-px bg-secondary/20 rounded-full animate-ripples" style={{ animationDelay: "2s" }} />
+
+      <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-16 items-center pt-20">
         <div className="text-left">
-          <div className="animate-hero-slide-down inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/90 text-xs font-black uppercase tracking-[0.2em] mb-8">
+          <div className="animate-hero-slide-down inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-white text-xs font-black uppercase tracking-[0.2em] mb-8">
              <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -56,7 +98,7 @@ export function Hero() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500">gota.</span>
           </h1>
 
-          <p className="animate-hero-slide-up text-lg md:text-xl text-white/70 max-w-xl leading-relaxed mb-10 font-medium" style={{ animationDelay: "400ms" }}>
+          <p className="animate-hero-slide-up text-lg md:text-xl text-slate-200 max-w-xl leading-relaxed mb-10 font-medium" style={{ animationDelay: "400ms" }}>
             Transforme seu manejo de irrigação com inteligência de dados. 
             Cálculos automáticos de Kc e balanço hídrico real para 
             maximizar produtividade e economizar até 40% de água.
@@ -64,7 +106,7 @@ export function Hero() {
 
           <div className="animate-hero-slide-up flex flex-wrap gap-4 mt-8" style={{ animationDelay: "800ms" }}>
             <Link to="/cadastro"
-              className="cta-shimmer px-8 py-4 rounded-xl font-bold text-white text-lg inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              className="cta-shimmer px-8 py-4 rounded-xl font-bold text-white text-lg inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-500/40"
               style={{ background: "var(--gradient-brand)", animation: "cta-pulse 2.5s ease-in-out infinite" }}>
               Começar Agora — Grátis <ArrowRight className="w-5 h-5" />
             </Link>
