@@ -211,45 +211,131 @@ export default function Dashboard() {
         </NeuCard>
       </div>
 
-      <NeuCard className="p-8 mb-8">
-        <h3 className="font-display font-bold text-xl mb-6 text-center">Perfil Hídrico do Solo</h3>
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-10">
-          <SoilProfile
-            armFinal={ultimoArm}
-            CAD={cad}
-            AFD={afd}
-            cultura={talhaoAtivo?.cultura ?? undefined}
-            estadio={talhaoAtivo?.estadio_fenologico ?? undefined}
-          />
-          <div className="hidden lg:block w-px h-48 bg-border" />
-          <div className="space-y-4 text-center lg:text-left max-w-xs">
-            <div className="neu-sm p-4 rounded-2xl">
-              <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest mb-1">Status Atual</div>
-              <div className={`text-2xl font-black ${percAFD < 20 ? 'text-destructive' : percAFD < 50 ? 'text-warning' : 'text-primary'}`}>
-                {percAFD > 100 ? 'Transbordamento' : percAFD < 20 ? 'Déficit Crítico' : 'Confortável'}
-              </div>
-              <div className="text-sm font-bold text-muted-foreground">{percAFD.toFixed(0)}% da AFD</div>
+      {(() => {
+        const arm = ultimoArm;
+        const pct = percAFD;
+        const status = pct > 100 ? { label: "Transbordamento", color: "#3b82f6", note: "Solo saturado. Suspender irrigação." }
+          : pct >= 70 ? { label: "Confortável", color: "#10b981", note: "Plantas com pleno acesso à água." }
+          : pct >= 40 ? { label: "Adequado", color: "#22c55e", note: "Faixa adequada. Planejar próxima irrigação." }
+          : pct >= 20 ? { label: "Atenção", color: "#FF9900", note: "Plantas com restrição hídrica leve." }
+          : pct > 0 ? { label: "Crítico", color: "#ef4444", note: "Estresse hídrico severo. Irrigar imediatamente." }
+          : { label: "Déficit Crítico", color: "#991b1b", note: "Ponto de murcha. Irrigar imediatamente." };
+        const isAlert = pct < 40;
+        // Posição na barra: 0–CC ocupa 85%, excesso ocupa 15%
+        const markerPct = arm <= cad
+          ? (cad > 0 ? (arm / cad) * 85 : 0)
+          : 85 + Math.min(15, ((arm - cad) / cad) * 100);
+        const fator = cad > 0 ? afd / cad : 0;
+
+        return (
+          <div className="rounded-3xl p-6 md:p-8 mb-8 shadow-2xl"
+            style={{ background: "linear-gradient(180deg,#22252c,#1C1E23)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-display font-bold text-xl text-white">Perfil Hídrico do Solo</h3>
+              <span className="text-[10px] uppercase tracking-widest font-bold text-white/50">
+                {(talhaoAtivo?.cultura ?? "—")} {talhaoAtivo?.estadio_fenologico ? `• ${talhaoAtivo.estadio_fenologico}` : ""}
+              </span>
             </div>
-            <div className="flex gap-3 justify-center lg:justify-start">
-              <div className="text-center px-3 py-2 rounded-xl bg-muted/50">
-                <div className="text-[10px] font-bold text-muted-foreground uppercase">Arm.</div>
-                <div className="text-lg font-black">{ultimoArm.toFixed(1)}<span className="text-[10px] ml-0.5">mm</span></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 items-start">
+              {/* COLUNA ESQUERDA — perfil */}
+              <div className="flex justify-center">
+                <SoilProfile
+                  armFinal={arm}
+                  CAD={cad}
+                  AFD={afd}
+                  cultura={talhaoAtivo?.cultura ?? undefined}
+                  estadio={talhaoAtivo?.estadio_fenologico ?? undefined}
+                />
               </div>
-              <div className="text-center px-3 py-2 rounded-xl bg-muted/50">
-                <div className="text-[10px] font-bold text-muted-foreground uppercase">AFD</div>
-                <div className="text-lg font-black">{afd.toFixed(1)}<span className="text-[10px] ml-0.5">mm</span></div>
+
+              {/* COLUNA DIREITA — painéis */}
+              <div className="flex flex-col gap-4">
+                {/* RESUMO ATUAL */}
+                <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-white/50 mb-3">
+                    Resumo Atual <span className="text-white/30 normal-case tracking-normal font-medium">(valores em mm)</span>
+                  </div>
+                  <div className="flex items-baseline gap-3 flex-wrap">
+                    <div className="font-display font-black text-4xl md:text-5xl leading-none" style={{ color: status.color }}>
+                      {status.label}
+                    </div>
+                    <div className="text-sm font-bold text-white/60">{pct.toFixed(0)}% da AFD</div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-5">
+                    {[
+                      { l: "ARM.", v: arm.toFixed(1) },
+                      { l: "AFD", v: afd.toFixed(1) },
+                      { l: "CAD", v: cad.toFixed(0) },
+                    ].map((c) => (
+                      <div key={c.l} className="rounded-xl px-3 py-2 text-center" style={{ background: "rgba(255,255,255,0.04)" }}>
+                        <div className="text-[9px] font-bold uppercase tracking-widest text-white/45">{c.l}</div>
+                        <div className="font-display font-black text-lg text-white">
+                          {c.v}<span className="text-[10px] font-bold text-white/40 ml-0.5">mm</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* BARRA DE PROGRESSO */}
+                <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="relative h-3 rounded-full overflow-hidden"
+                    style={{ background: "linear-gradient(90deg,#7f1d1d 0%,#ef4444 18%,#f59e0b 35%,#22c55e 60%,#3b82f6 85%,#1d4ed8 100%)" }}>
+                  </div>
+                  <div className="relative h-5">
+                    <div className="absolute -translate-x-1/2 -top-1 transition-all duration-700"
+                      style={{ left: `${markerPct}%` }}>
+                      <div className="flex flex-col items-center" style={{ filter: `drop-shadow(0 0 4px ${status.color})` }}>
+                        <div style={{
+                          width: 0, height: 0,
+                          borderLeft: "7px solid transparent",
+                          borderRight: "7px solid transparent",
+                          borderTop: `9px solid ${status.color}`,
+                        }} />
+                        <div className="mt-1 px-2 py-0.5 rounded-md text-[10px] font-black text-white whitespace-nowrap"
+                          style={{ background: status.color }}>
+                          {arm.toFixed(1)} mm
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-4 mt-2 text-white/50">
+                    {[
+                      { Icon: Flame, label: "PMP" },
+                      { Icon: Droplet, label: "AFD" },
+                      { Icon: Cloud, label: "CC" },
+                      { Icon: CloudRain, label: "Excesso" },
+                    ].map((it, i) => (
+                      <div key={it.label} className={`flex flex-col items-${i === 0 ? "start" : i === 3 ? "end" : "center"} gap-0.5`}>
+                        <it.Icon className="w-3.5 h-3.5" />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">{it.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* NOTAS */}
+                <div className="rounded-2xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest"
+                      style={{ background: isAlert ? "rgba(255,153,0,0.18)" : "rgba(16,185,129,0.18)", color: isAlert ? "#FF9900" : "#34d399" }}>
+                      {isAlert ? "Atenção" : "Tudo certo"}
+                    </span>
+                    <span className="text-[11px] font-mono text-white/60">
+                      %AFD: {pct.toFixed(0)}% • AFD = {fator.toFixed(2)} × {cad.toFixed(0)} = {afd.toFixed(1)}mm
+                    </span>
+                  </div>
+                  <p className="text-sm text-white/80">{status.note}</p>
+                  <div className="mt-3 pt-3 border-t border-white/5 text-[10px] uppercase tracking-[0.2em] font-bold text-white/40">
+                    {(talhaoAtivo?.cultura ?? "—")} {talhaoAtivo?.estadio_fenologico ? `• ${talhaoAtivo.estadio_fenologico}` : ""}
+                  </div>
+                </div>
               </div>
-              <div className="text-center px-3 py-2 rounded-xl bg-muted/50">
-                <div className="text-[10px] font-bold text-muted-foreground uppercase">CAD</div>
-                <div className="text-lg font-black">{cad.toFixed(0)}<span className="text-[10px] ml-0.5">mm</span></div>
-              </div>
-            </div>
-            <div className="pt-2">
-              <SoilWaterBar armFinal={ultimoArm} CAD={cad} AFD={afd} />
             </div>
           </div>
-        </div>
-      </NeuCard>
+        );
+      })()}
 
       <DataSourcesFooter />
     </div>
