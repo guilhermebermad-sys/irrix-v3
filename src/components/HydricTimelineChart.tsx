@@ -170,8 +170,6 @@ export function HydricTimelineChart({
               isAnimationActive
             />
 
-            {/* Marcadores de irrigação (abaixo do eixo) */}
-            <Scatter dataKey="irrigMarker" shape={<IrrigShape />} isAnimationActive={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
