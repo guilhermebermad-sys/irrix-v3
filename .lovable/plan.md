@@ -1,61 +1,54 @@
-## Objetivo
+## Causa raiz
 
-Redesenhar o card **"Perfil Hídrico do Solo"** do Dashboard num painel escuro fotorrealista de duas colunas, mantendo os mesmos dados (ARM, AFD, CAD, %AFD, cultura, estádio) e a lógica atual de cálculo.
+O build publicado (e o share preview, que reaproveita o mesmo bundle) não recebeu as variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` substituídas pelo Vite. No console do `irrixv3.lovable.app` aparece:
 
-## Escopo
+> `[Supabase] Missing Supabase environment variable(s): SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY.`
 
-- `src/components/SoilProfile.tsx` → reescrever o SVG do perfil para visual fotorrealista
-- `src/pages/Dashboard.tsx` (linhas 214–252) → reorganizar a coluna direita (resumo, barra de progresso com ícones, painel de notas)
-- Apenas este card. Resto do app intocado. Sem mudança no tema global — o card terá superfície escura própria (`#1C1E23`) que funciona em light/dark.
+`src/integrations/supabase/client.ts` é um arquivo auto-gerenciado (não pode ser editado) e lança `Error` no primeiro acesso ao `supabase`. Como `AuthProvider` importa `supabase` direto, o app trava no boot → tela preta.
 
-## Coluna esquerda — Perfil do solo (SVG)
+A boa notícia: o próprio `client.ts` tem fallback para `process.env.SUPABASE_URL` / `process.env.SUPABASE_PUBLISHABLE_KEY`. Como esses valores são **públicos** (URL do projeto + anon key, já presentes no system prompt), basta populá-los no `globalThis.process.env` antes de qualquer import do supabase.
 
-Largura fixa do perfil, novo viewBox vertical. Camadas:
+## Mudanças propostas
 
-1. **Fundo do perfil** — gradiente marrom/areia + `<filter feTurbulence>` para textura granulada de terra.
-2. **Zona CC (topo)** — banda azul-clara translúcida com onda animada já existente (manter, mas refinar gradiente).
-3. **Zona AFD (meio)** — gradiente verde→laranja claro, com ruído sutil de "solo úmido".
-4. **Zona PMP (base)** — gradiente laranja escuro→vermelho, com padrão de rachaduras (paths finos brancos com baixa opacidade).
-5. **Zona Indisponível** — hachura cinza (manter).
-6. **Raízes da soja R1-R2** — substituir o desenho genérico por uma silhueta de soja em floração: caule ramificado, folhas trifoliadas, pequenas flores roxas, e sistema radicular pivotante com radicelas finas atravessando AFD/PMP.
-7. **Marcadores laterais (esquerda)** — chips coloridos alinhados verticalmente:
-   - `CC 100mm` (azul `#3B82F6`)
-   - `AFD 50mm` (laranja/verde `#10B981`)
-   - `PMP` (vermelho `#EF4444`)
-8. **Indicador de água atual** — linha horizontal verde luminosa (`stroke #34d399` + `filter drop-shadow`), com "bolha" flutuante (pill arredondado) acima exibindo `60.3mm` em negrito.
+### 1. Novo arquivo `src/lib/supabaseEnvShim.ts`
+Shim de ambiente, executado por efeito colateral no entrypoint. Apenas roda no browser e só preenche o que estiver faltando — não sobrescreve nada já injetado pelo Vite no preview normal.
 
-## Coluna direita — Painéis de dados
+```ts
+// Garante que o cliente Supabase encontre URL/anon key mesmo se o build
+// não tiver substituído as variáveis VITE_* (acontece em alguns bundles
+// publicados/share preview). URL e anon key são públicos por design.
+const SUPABASE_URL = "https://qjmcozgprfprsqyyoppm.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqbWNvemdwcmZwcnNxeXlvcHBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODA4NzQsImV4cCI6MjA5Mzg1Njg3NH0.0bb_X1BABMg4EKpa0sS0okGS4ZeiwO4oR2t-cplQwVA";
 
-Três blocos empilhados, todos com superfície `#1C1E23`, bordas arredondadas (`rounded-2xl`) e sombra suave.
+if (typeof window !== "undefined") {
+  const g = globalThis as any;
+  g.process = g.process ?? {};
+  g.process.env = g.process.env ?? {};
+  if (!g.process.env.SUPABASE_URL) g.process.env.SUPABASE_URL = SUPABASE_URL;
+  if (!g.process.env.SUPABASE_PUBLISHABLE_KEY) g.process.env.SUPABASE_PUBLISHABLE_KEY = SUPABASE_PUBLISHABLE_KEY;
+}
+export {};
+```
 
-### 1. Painel "RESUMO ATUAL"
-- Título pequeno: `RESUMO ATUAL (Valores em mm)` — uppercase, tracking largo, cinza claro.
-- Status grande: `Confortável` em laranja `#FF9900`, fonte display, ~36px (cor reage ao status: verde/laranja/vermelho).
-- Subtítulo: `21% da AFD` em cinza médio.
-- Linha de 3 chips lado a lado: `ARM.: 60.3 mm`, `AFD: 50.0 mm`, `CAD: 100 mm` — cada chip com label pequeno cinza e valor branco.
+### 2. Editar `src/main.tsx`
+Adicionar **a primeira linha** (antes de qualquer outro import):
 
-### 2. Barra de progresso
-Refazer o `SoilWaterBar` com visual mais limpo:
-- Trilho com gradiente `vermelho → laranja → verde → azul` (PMP→AFD→CC→Excesso).
-- 4 ícones lucide alinhados nos limites: `Cactus` (PMP), `Droplet` (AFD), `Cloud` (CC), `CloudRain` (Excesso) — cinza claro com label pequeno embaixo.
-- Marcador: triângulo laranja neon (`#FF9900`, drop-shadow) apontando para a posição de 60.3mm, com tooltip "60.3mm" em pill.
+```ts
+import "./lib/supabaseEnvShim";
+```
 
-### 3. Painel de notas
-- Pill `Atenção` em laranja translúcido no topo.
-- Linha 1 (mono-ish, pequeno): `%AFD: 21% • AFD = 0.50 × 100 = 50.0mm`.
-- Linha 2 (frase): `Plantas com restrição hídrica leve.` — texto reativo conforme situação.
-- Rodapé: `SOJA • FLORAÇÃO R1-R2` — uppercase, tracking largo, cinza claro (vem de `talhaoAtivo`).
+Essa ordem é crítica: o `supabase` é um Proxy lazy, e qualquer importação anterior que dispare `supabase.auth.*` antes do shim faria o erro voltar.
 
-## Detalhes técnicos
-
-- Tipografia: usar a `font-display` já configurada para títulos/destaques; `font-sans` (Inter) para corpo.
-- Cores via tokens semânticos quando possível; tokens fixos (#1C1E23, #FF9900) entram como utilitários inline já que o card tem identidade própria.
-- Garantir que `armFinal`, `percAFD`, `cad`, `afd` exibidos no SVG, no painel "RESUMO" e na barra **usem o mesmo número arredondado** (utility helper local).
-- Acessibilidade: rótulos `<title>` no SVG; contraste AA sobre `#1C1E23`.
-- Responsivo: em mobile (<lg) coluna direita vai abaixo da esquerda; SVG mantém aspect ratio.
+## Validação
+1. Salvar mudanças → preview normal continua funcionando (shim é no-op se VITE vars já existem).
+2. Republicar via botão **Update** no diálogo de publicação.
+3. Abrir `https://irrixv3.lovable.app` em aba anônima → app deve carregar e ir pra tela de auth/dashboard normalmente.
+4. Compartilhar share preview → mesma coisa.
 
 ## Fora do escopo
+- **Não** editar `src/integrations/supabase/client.ts` nem `.env` (gerenciados pela plataforma).
+- Não mexer em rotas, RLS, edge functions ou auth flow — o problema é puramente de bootstrap de ambiente no browser.
+- Não trocar `client.server.ts` ou `auth-middleware.ts` (rodam no servidor com `process.env` real do Worker, não são afetados).
 
-- Não alterar `HydricTimelineChart`, header, sidebar, outros cards.
-- Não mexer em cálculos agronômicos (`src/lib/agro/calculations.ts`).
-- Não tocar no tema global do app (light/dark continuam funcionando).
+## Observação
+Esse shim é uma rede de segurança. Se a plataforma corrigir a injeção de `VITE_*` no build publicado no futuro, ele simplesmente vira no-op (não sobrescreve nada). Pode ser removido depois sem impacto.
