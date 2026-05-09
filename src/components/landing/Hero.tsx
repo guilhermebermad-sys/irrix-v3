@@ -98,7 +98,7 @@ export function Hero() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500">gota.</span>
           </h1>
 
-          <p className="animate-hero-slide-up text-lg md:text-xl text-white/70 max-w-xl leading-relaxed mb-10 font-medium" style={{ animationDelay: "400ms" }}>
+          <p className="animate-hero-slide-up text-lg md:text-xl text-slate-200 max-w-xl leading-relaxed mb-10 font-medium" style={{ animationDelay: "400ms" }}>
             Transforme seu manejo de irrigação com inteligência de dados. 
             Cálculos automáticos de Kc e balanço hídrico real para 
             maximizar produtividade e economizar até 40% de água.
@@ -106,7 +106,7 @@ export function Hero() {
 
           <div className="animate-hero-slide-up flex flex-wrap gap-4 mt-8" style={{ animationDelay: "800ms" }}>
             <Link to="/cadastro"
-              className="cta-shimmer px-8 py-4 rounded-xl font-bold text-white text-lg inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              className="cta-shimmer px-8 py-4 rounded-xl font-bold text-white text-lg inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-500/40"
               style={{ background: "var(--gradient-brand)", animation: "cta-pulse 2.5s ease-in-out infinite" }}>
               Começar Agora — Grátis <ArrowRight className="w-5 h-5" />
             </Link>
