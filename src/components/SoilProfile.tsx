@@ -187,6 +187,10 @@ export function SoilProfile(props: SoilProfileProps) {
           <clipPath id={`below-${uid}`}>
             <rect x={0} y={yNivel} width={240} height={360 - yNivel} />
           </clipPath>
+          {/* Clip para conter ondas dentro do perfil do solo */}
+          <clipPath id={`soil-${uid}`}>
+            <rect x={xSolo + 1} y={ySolo} width={wSolo - 2} height={yRocha - ySolo} />
+          </clipPath>
         </defs>
 
         {/* Planta acima do solo */}
