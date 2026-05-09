@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelecao } from "@/contexts/SelecaoContext";
 import { supabase } from "@/integrations/supabase/client";
 import { NeuCard } from "@/components/ui/neu";
-import { Sprout, Droplets, AlertCircle, Bell, TrendingUp, Map as MapIcon } from "lucide-react";
+import { Sprout, Droplets, AlertCircle, Bell, TrendingUp, Map as MapIcon, Cloud, CloudRain, Droplet, Cactus } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, CartesianGrid } from "recharts";
 import { format, parseISO } from "date-fns";
 import { SOIL_DATA, getAFD } from "@/lib/agro/reference";
