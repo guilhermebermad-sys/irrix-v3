@@ -253,14 +253,22 @@ export function SoilProfile(props: SoilProfileProps) {
             opacity={0.45}
             style={{ transition: "y 800ms ease-in-out, height 800ms ease-in-out" }}
           />
-          {/* Onda animada — clipada dentro do perfil */}
+          {/* Onda animada — oscila no lugar dentro do perfil */}
           <g clipPath={`url(#soil-${uid})`} style={{ transform: `translateY(${yNivel - yPMP}px)`, transition: "transform 800ms ease-in-out" }}>
-            <path
-              d={`M${xSolo - 150},${yPMP} Q${xSolo - 115},${yPMP - 3} ${xSolo - 80},${yPMP} Q${xSolo - 45},${yPMP + 3} ${xSolo - 10},${yPMP} Q${xSolo + 25},${yPMP - 3} ${xSolo + 60},${yPMP} Q${xSolo + 95},${yPMP + 3} ${xSolo + 130},${yPMP} Q${xSolo + 165},${yPMP - 3} ${xSolo + 200},${yPMP} L${xSolo + 200},${yPMP + 3} L${xSolo - 150},${yPMP + 3} Z`}
-              fill={cores.solid}
-              opacity={0.9}
-            >
-              <animateTransform attributeName="transform" type="translate" from="-150 0" to="0 0" dur="3s" repeatCount="indefinite" />
+            <path fill={cores.solid} opacity={0.9}>
+              <animate
+                attributeName="d"
+                dur="2.5s"
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes="0;0.5;1"
+                keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
+                values={`
+                  M${xSolo},${yPMP} Q${xSolo + wSolo * 0.25},${yPMP - 3} ${xSolo + wSolo * 0.5},${yPMP} Q${xSolo + wSolo * 0.75},${yPMP + 3} ${xSolo + wSolo},${yPMP} L${xSolo + wSolo},${yPMP + 4} L${xSolo},${yPMP + 4} Z;
+                  M${xSolo},${yPMP} Q${xSolo + wSolo * 0.25},${yPMP + 3} ${xSolo + wSolo * 0.5},${yPMP} Q${xSolo + wSolo * 0.75},${yPMP - 3} ${xSolo + wSolo},${yPMP} L${xSolo + wSolo},${yPMP + 4} L${xSolo},${yPMP + 4} Z;
+                  M${xSolo},${yPMP} Q${xSolo + wSolo * 0.25},${yPMP - 3} ${xSolo + wSolo * 0.5},${yPMP} Q${xSolo + wSolo * 0.75},${yPMP + 3} ${xSolo + wSolo},${yPMP} L${xSolo + wSolo},${yPMP + 4} L${xSolo},${yPMP + 4} Z
+                `}
+              />
             </path>
           </g>
         </g>
