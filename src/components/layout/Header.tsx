@@ -38,7 +38,7 @@ export function Header() {
   const talhoesDaFazenda = talhoes.filter(t => t.fazenda_id === fazendaAtiva?.id);
 
   return (
-    <header className="sticky top-0 z-20 px-4 md:px-6 py-3 bg-background/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-[1001] px-4 md:px-6 py-3 bg-background/80 backdrop-blur-sm">
       <div className="neu px-4 py-3 flex items-center gap-3 flex-wrap">
         <SidebarToggle />
         {/* Logo dinâmico: aparece apenas em mobile ou quando a sidebar está colapsada no desktop */}
