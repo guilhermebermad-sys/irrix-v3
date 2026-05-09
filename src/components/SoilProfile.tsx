@@ -187,6 +187,10 @@ export function SoilProfile(props: SoilProfileProps) {
           <clipPath id={`below-${uid}`}>
             <rect x={0} y={yNivel} width={240} height={360 - yNivel} />
           </clipPath>
+          {/* Clip para conter ondas dentro do perfil do solo */}
+          <clipPath id={`soil-${uid}`}>
+            <rect x={xSolo + 1} y={ySolo} width={wSolo - 2} height={yRocha - ySolo} />
+          </clipPath>
         </defs>
 
         {/* Planta acima do solo */}
@@ -249,8 +253,8 @@ export function SoilProfile(props: SoilProfileProps) {
             opacity={0.45}
             style={{ transition: "y 800ms ease-in-out, height 800ms ease-in-out" }}
           />
-          {/* Onda animada */}
-          <g style={{ transform: `translateY(${yNivel - yPMP}px)`, transition: "transform 800ms ease-in-out" }}>
+          {/* Onda animada — clipada dentro do perfil */}
+          <g clipPath={`url(#soil-${uid})`} style={{ transform: `translateY(${yNivel - yPMP}px)`, transition: "transform 800ms ease-in-out" }}>
             <path
               d={`M${xSolo - 150},${yPMP} Q${xSolo - 115},${yPMP - 3} ${xSolo - 80},${yPMP} Q${xSolo - 45},${yPMP + 3} ${xSolo - 10},${yPMP} Q${xSolo + 25},${yPMP - 3} ${xSolo + 60},${yPMP} Q${xSolo + 95},${yPMP + 3} ${xSolo + 130},${yPMP} Q${xSolo + 165},${yPMP - 3} ${xSolo + 200},${yPMP} L${xSolo + 200},${yPMP + 3} L${xSolo - 150},${yPMP + 3} Z`}
               fill={cores.solid}
