@@ -1,45 +1,87 @@
 import { Link } from "react-router-dom";
 import { Play, Droplets, ArrowRight, CheckCircle2, AlertTriangle, Zap } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+const VIDEO_SRC = "https://videos.pexels.com/video-files/4887998/4887998-uhd_2732_1440_25fps.mp4";
+const VIDEO_POSTER = "https://images.pexels.com/videos/4887998/pexels-photo-4887998.jpeg";
 
 export function Hero() {
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
+  // Parallax (desktop only)
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        // Animation start logic if needed
+    if (isMobile) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
-    }, { threshold: 0.1 });
-    if (mockupRef.current) observer.observe(mockupRef.current);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile]);
+
+  // Pause video when off-screen
+  useEffect(() => {
+    if (!videoRef.current || !sectionRef.current) return;
+    const el = videoRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(sectionRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
-      {/* Cinematic Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-40' : 'opacity-0'}`}
-        >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-watering-a-large-crop-field-with-a-sprinkler-20054-large.mp4" type="video/mp4" />
-        </video>
-        {/* Dynamic Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
-        
-        {/* Animated Ripples */}
-        <div className="absolute top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-3/4 right-1/4 w-px h-px bg-secondary/20 rounded-full animate-ripples" style={{ animationDelay: '2s' }} />
+    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+      {/* Animated gradient fallback */}
+      <div
+        className={`absolute inset-0 z-0 bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900 animate-gradient-slow transition-opacity duration-1000 ${videoLoaded && !isMobile ? "opacity-0" : "opacity-100"}`}
+      />
+
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {isMobile ? (
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${VIDEO_POSTER})` }} />
+        ) : (
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={VIDEO_POSTER}
+            onCanPlay={() => setVideoLoaded(true)}
+            style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+            className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
+          >
+            <source src={VIDEO_SRC} type="video/mp4" />
+            Seu navegador não suporta vídeo.
+          </video>
+        )}
       </div>
 
-      {!videoLoaded && <div className="absolute inset-0 z-[-1] hero-video-fallback" />}
+      {/* Dark green overlay */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-emerald-950/50 to-black/70" />
+
+      {/* Animated Ripples */}
+      <div className="absolute z-10 top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: "0s" }} />
+      <div className="absolute z-10 top-3/4 right-1/4 w-px h-px bg-secondary/20 rounded-full animate-ripples" style={{ animationDelay: "2s" }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-16 items-center pt-20">
         <div className="text-left">
