@@ -1,42 +1,135 @@
-# Plano: Importar projeto IRRIX – Precision Irrigation
 
-O zip enviado é um app **Vite + React 18 + React Router DOM + Supabase + PWA** já completo (115 arquivos, ~3,5 MB de código), com páginas em português (Dashboard, Fazendas, Manejo Diário, Histórico, Alertas, Caderno de Campo, Configurações, Auth, Onboarding, Landing), integração Leaflet (mapas), Recharts, jsPDF, XLSX e 6 migrações SQL do Supabase.
+# Plano: Perfil do Solo redesenhado + Gráfico Temporal Hídrico
 
-O template atual deste projeto Lovable é **TanStack Start** (estrutura totalmente diferente, com `src/routes/` baseado em arquivos). Reescrever 115 arquivos para TanStack seria arriscado e demorado. A abordagem mais segura é **substituir o template pelo projeto enviado**, mantendo a stack original (Vite + React Router), e religar o backend pelo Lovable Cloud.
+Substituir os visuais atuais por dois componentes fiéis aos esboços fornecidos.
 
-## O que vai ser feito
+## 1) `src/components/SoilProfile.tsx` — reescrita visual
 
-1. **Limpar o template TanStack atual**
-   - Remover `src/routes/`, `src/router.tsx`, `src/server.ts`, `src/start.ts`, `src/routeTree.gen.ts`, `wrangler.jsonc`, `vite.config.ts`, `package.json`, `src/styles.css`, etc.
+Mantém a mesma API pública (props `armFinal`, `CAD`, `AFD`, `cultura`, `estadio`, `compact`, `width`, `height`) e o named export `SoilWaterBar` para não quebrar imports. Muda apenas o desenho SVG.
 
-2. **Copiar o conteúdo do zip para o projeto**
-   - `src/` completo (App.tsx, main.tsx, pages/, components/, contexts/, hooks/, integrations/, lib/, assets/, test/)
-   - `index.html`, `vite.config.ts`, `tailwind.config.ts`, `postcss.config.js`, `tsconfig*.json`, `eslint.config.js`, `vitest.config.ts`, `components.json`
-   - `public/` (ícones PWA, manifest, etc.)
-   - `package.json` (todas as dependências: leaflet, jspdf, xlsx, recharts, supabase-js, react-router-dom, vite-plugin-pwa, etc.)
+### Novo layout (viewBox 240×360)
 
-3. **Instalar dependências** com `bun install`.
+De cima para baixo:
 
-4. **Habilitar Lovable Cloud** (Supabase gerenciado) — necessário porque o app usa autenticação, banco de dados, RLS e armazenamento.
+1. **Acima do solo (y: 0–60)** — planta estilizada centrada
+   - Caule vertical marrom-esverdeado (#65a30d)
+   - 3 pares de folhas ovais simétricas em verde (`hsl(var(--primary))`)
+   - Tamanho/forma varia por `cultura` (milho = folhas longas pendentes; soja = trifólios; café = arbusto; default = genérica)
 
-5. **Aplicar as 6 migrações SQL** (`supabase/migrations/*.sql`) no banco do Lovable Cloud, em ordem cronológica, criando tabelas, políticas RLS, funções e seeds.
+2. **Linha de superfície (y=60)** — terra ondulada marrom (#92400e), com textura sutil
 
-6. **Religar o cliente Supabase** — o `src/integrations/supabase/client.ts` original lê `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`. Vou ajustá-lo para usar as variáveis injetadas pelo Lovable Cloud (ou regenerar com URL/anon key do projeto Cloud).
+3. **Zona de excesso (y: 60–80)** — faixa azul clara (#dbeafe) acima da CC
 
-7. **Verificar build e preview** — confirmar que o app carrega, a tela de Landing/Login aparece e o Service Worker (PWA) registra sem erros.
+4. **CC — y=80** — linha tracejada azul (#1d4ed8) + label "CC" à esquerda com `{CAD}mm`
 
-## Detalhes técnicos
+5. **Zona AFD (y: 80 → yLimite)** — faixa verde esmeralda (`#a7f3d0` → `#34d399`)
 
-- **Stack final**: Vite 5 + React 18 + TypeScript + Tailwind 3 + shadcn/ui + React Router v6 + Supabase + vite-plugin-pwa.
-- **Não vou converter para TanStack Start** — o custo/risco de reescrever todas as rotas, loaders e tipos não compensa, e o usuário pediu "criar o projeto desse código" (preservar como está).
-- **Migrações SQL**: serão aplicadas via ferramenta de migração do Lovable Cloud (não via `psql`), pois criam tabelas e políticas.
-- **Secrets**: nenhuma chave externa nos arquivos enviados além das do Supabase. Se o app usar APIs externas (clima, etc.) descobrirei ao ler `lib/` e pedirei as chaves antes de seguir.
-- **PWA**: `vite-plugin-pwa` já configurado no `vite.config.ts` original — mantido.
+6. **Limite AFD — y=yLimite** — linha tracejada âmbar (#f59e0b) + label "AFD {AFD}mm"
 
-## Pontos que podem precisar de ajuste depois
+7. **Zona de Estresse (yLimite → 240)** — faixa âmbar/laranja (`#fed7aa` → `#fb923c`)
 
-- Caso alguma migração dependa de extensões Postgres não habilitadas no Cloud, precisarei adaptar.
-- Se o `package.json` original tiver alguma dependência incompatível com o ambiente de build atual, faço o downgrade/substituição pontual.
-- Eventuais imports quebrados pós-cópia serão corrigidos individualmente.
+8. **PMP — y=240** — linha tracejada vermelha (#dc2626) + label "PMP"
 
-Posso seguir com a importação?
+9. **Abaixo do PMP (y: 240–280)** — hachura cinza escura `<pattern>` cinza-grafite (#475569)
+
+10. **Sistema radicular (y: 60→240)** — 5–7 curvas Bézier finas saindo da base do caule, descendo e ramificando. Mais densas no topo, esparsas próximas ao PMP. Cor depende da posição vs nível d'água:
+    - Acima do nível: marrom claro #a16207 (raízes secas)
+    - Abaixo do nível: verde-azulado #0d9488 com opacidade 0.7 (submersas)
+    - Renderizar 2 cópias por raiz (clip-path acima/abaixo do nível)
+
+11. **Nível d'água atual** — preenchimento de `yPMP` até `yNivel`
+    - Cor por zona (verde/âmbar/azul/vermelho escuro) usando `SIT_COLORS`
+    - Onda senoidal animada SMIL no topo (mantém a atual)
+    - Transição CSS de 800ms no `y`
+
+12. **Bracket lateral esquerdo (x: 4–22)** — como no esboço
+    - Bracket externo grande de y=80 (CC) até y=240 (PMP) → label vertical "CAD {CAD}mm"
+    - Bracket interno de y=80 (CC) até y=yLimite → label vertical "AFD {AFD}mm"
+    - Desenhados como `<path>` em formato de colchete `[`
+    - Texto rotacionado -90°
+
+13. **Régua de % opcional à direita (oculta em compact)**
+
+### Modo `compact=true` (80×130)
+Mesma estrutura mas sem brackets, sem labels e sem planta detalhada (só uma folhinha simples). Mantém zonas + nível animado + linhas CC/AFD/PMP finas.
+
+### Painel info (não-compact)
+Mantém o painel neumórfico atual (badge de situação + interpretação). Sem mudança.
+
+## 2) `src/components/HydricTimelineChart.tsx` — NOVO
+
+Gráfico de linha temporal conforme Imagem 1 do esboço, baseado em Recharts (já usado no projeto).
+
+### Props
+```ts
+interface Props {
+  registros: Array<{
+    data: string;        // ISO yyyy-mm-dd
+    arm_final: number;
+    etc?: number;
+    chuva?: number;
+    lamina_bruta?: number;
+    perc_cad?: number;
+  }>;
+  CAD: number;
+  AFD: number;
+  periodo?: 7 | 14 | 30;   // default 14
+  onPeriodoChange?: (p: 7|14|30) => void;
+  height?: number;         // default 320
+}
+```
+
+### Estrutura visual
+
+- **`<ComposedChart>`** com:
+  - `<CartesianGrid>` discreto
+  - **`<ReferenceArea y1={CAD-AFD} y2={CAD}>`** fill verde claro #d1fae5 opacity 0.4 → zona ótima
+  - **`<ReferenceArea y1={0} y2={CAD-AFD}>`** fill âmbar #fef3c7 opacity 0.4 → zona estresse
+  - **`<ReferenceArea y1={-10} y2={0}>`** fill vermelho #fee2e2 opacity 0.4 → murcha
+  - **`<ReferenceLine y={CAD}>`** azul tracejada + label "CC {CAD}mm"
+  - **`<ReferenceLine y={CAD-AFD}>`** âmbar tracejada + label "AFD {AFD}mm"
+  - **`<ReferenceLine y={0}>`** vermelha tracejada + label "PMP"
+  - **`<XAxis dataKey="data">`** formatado dd/MM
+  - **`<YAxis>`** domínio `[-10, CAD * 1.1]`
+  - **`<Line dataKey="arm_final">`** azul/verde, dots visíveis r=4
+  - **`<Tooltip>`** customizado mostrando: Data | Arm | %AFD | ETc | Chuva | Lâmina | Status (chama `classificarSituacao` de SoilProfile)
+
+- **Marcadores customizados** (camada SVG sobreposta dentro do `ResponsiveContainer` via `<Customized>`):
+  - Para cada `lamina_bruta > 0`: ícone gota 💧 + valor "{X}mm" abaixo do eixo X na posição do dia
+  - Para cada `chuva > 0`: ícone 🌧 + valor "{X}mm" acima do eixo X (offset)
+  - Calcular posição X via `xAxisMap` do Recharts ou usar `<Scatter>` com shape custom
+
+- **Header com seletor de período** (botões neumórficos): 7 / 14 / 30 dias
+  - Estado interno se `onPeriodoChange` não passado
+  - Filtra `registros` aos últimos N dias antes de renderizar
+
+### Estilo
+- Container: `<NeuCard>` no consumidor
+- Cores via tokens HSL onde possível, paletas fixas para zonas hídricas (alinhado com SoilProfile)
+
+## 3) Integrações
+
+### `src/pages/Dashboard.tsx`
+- Já usa `SoilProfile` — atualização automática (mesma API)
+- Adicionar `<HydricTimelineChart registros={registros} CAD={cad} AFD={afd} />` **substituindo** o `LineChart` atual de "Disponibilidade Hídrica — AFD (%)"
+- Manter o gráfico de barras "Lâminas e Consumo"
+
+### `src/pages/ManejoDiario.tsx`
+- Já usa `SoilProfile` — sem mudanças
+
+### `src/pages/Historico.tsx`
+- Substituir o `<LineChart>` "Série temporal — Arm. Final e % CAD" pelo novo `<HydricTimelineChart registros={filtrados} CAD={cad} AFD={afd} periodo={30} />`
+- Adicionar leitura de `cad` e `afd` da fazenda/talhão ativos (via `useSelecao` + `getAFD`)
+
+### `src/components/map/TalhoesOverviewMap.tsx`
+- Já usa `SoilProfile compact` — sem mudanças (apenas se beneficia do novo visual)
+
+## 4) Arquivos
+- **Reescrever**: `src/components/SoilProfile.tsx` (apenas a parte SVG; mantém API, exports e helpers)
+- **Criar**: `src/components/HydricTimelineChart.tsx`
+- **Editar**: `src/pages/Dashboard.tsx`, `src/pages/Historico.tsx`
+
+## 5) Validação
+- `bunx tsc --noEmit` limpo
+- QA visual no Dashboard e Histórico (claro/escuro, mobile/desktop)
+- Verificar marcadores de irrigação aparecem corretamente em dias com `lamina_bruta > 0`
