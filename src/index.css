@@ -1,0 +1,311 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+/* IRRIX — Design System Neumorphism (Soft UI) */
+
+@layer base {
+  :root {
+    /* Base surface */
+    --background: 214 22% 93%;          /* #e8edf2 */
+    --foreground: 215 25% 20%;
+
+    --card: 214 22% 93%;
+    --card-foreground: 215 25% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 20%;
+
+    /* Brand */
+    --primary: 160 84% 39%;             /* #10b981 emerald */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 189 94% 43%;           /* #06b6d4 cyan */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 214 22% 88%;
+    --muted-foreground: 215 16% 40%;
+
+    --accent: 189 94% 43%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;           /* #ef4444 */
+    --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;              /* #f59e0b */
+    --warning-foreground: 0 0% 100%;
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 215 20% 80%;
+    --input: 215 20% 80%;
+    --ring: 160 84% 39%;
+
+    --radius: 1rem;
+
+    /* Neumorphism shadows */
+    --neu-light: 255 255 255;
+    --neu-dark: 195 201 212;
+    --shadow-neu: 8px 8px 20px rgba(195,201,212,0.7), -8px -8px 20px rgba(255,255,255,0.85);
+    --shadow-neu-sm: 4px 4px 10px rgba(195,201,212,0.6), -4px -4px 10px rgba(255,255,255,0.85);
+    --shadow-neu-inset: inset 4px 4px 8px rgba(195,201,212,0.6), inset -4px -4px 8px rgba(255,255,255,0.9);
+    --shadow-neu-pressed: inset 6px 6px 12px rgba(195,201,212,0.7), inset -6px -6px 12px rgba(255,255,255,0.9);
+
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, hsl(160 84% 39%), hsl(189 94% 43%));
+    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50%), hsl(20 90% 55%));
+    --gradient-danger: linear-gradient(135deg, hsl(0 84% 60%), hsl(350 85% 55%));
+
+    --sidebar-background: 214 22% 93%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 22% 88%;
+    --sidebar-accent-foreground: 215 25% 20%;
+    --sidebar-border: 215 20% 82%;
+    --sidebar-ring: 160 84% 39%;
+  }
+
+  .dark {
+    --background: 220 18% 11%;          /* #181c22 */
+    --foreground: 210 30% 92%;
+    --card: 220 18% 13%;
+    --card-foreground: 210 30% 92%;
+    --popover: 220 18% 13%;
+    --popover-foreground: 210 30% 92%;
+    --primary: 160 84% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 189 94% 48%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 189 94% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 100%;
+    --success: 160 84% 45%;
+    --success-foreground: 0 0% 100%;
+    --border: 220 15% 22%;
+    --input: 220 15% 22%;
+    --ring: 160 84% 45%;
+
+    /* Neumorphism shadows — dark variant */
+    --shadow-neu: 8px 8px 20px rgba(0,0,0,0.55), -8px -8px 20px rgba(255,255,255,0.04);
+    --shadow-neu-sm: 4px 4px 10px rgba(0,0,0,0.5), -4px -4px 10px rgba(255,255,255,0.035);
+    --shadow-neu-inset: inset 4px 4px 8px rgba(0,0,0,0.55), inset -4px -4px 8px rgba(255,255,255,0.04);
+    --shadow-neu-pressed: inset 6px 6px 12px rgba(0,0,0,0.6), inset -6px -6px 12px rgba(255,255,255,0.04);
+
+    --sidebar-background: 220 18% 11%;
+    --sidebar-foreground: 210 30% 88%;
+    --sidebar-primary: 160 84% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 210 30% 92%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 160 84% 45%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+}
+
+@layer components {
+  .neu {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu);
+    border-radius: var(--radius);
+  }
+  .neu-sm {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu-sm);
+    border-radius: calc(var(--radius) - 0.25rem);
+  }
+  .neu-inset {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu-inset);
+    border-radius: calc(var(--radius) - 0.25rem);
+  }
+  .neu-pressed {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu-pressed);
+    border-radius: calc(var(--radius) - 0.25rem);
+  }
+  .neu-button {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu-sm);
+    border-radius: 0.75rem;
+    transition: all 0.15s ease;
+  }
+  .neu-button:hover { transform: translateY(-1px); }
+  .neu-button:active {
+    box-shadow: var(--shadow-neu-pressed);
+    transform: translateY(0);
+  }
+  .neu-input {
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-neu-inset);
+    border: none !important;
+    border-radius: 0.75rem;
+    outline: none;
+  }
+  .neu-input:focus { box-shadow: var(--shadow-neu-pressed); }
+  .text-gradient-brand {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 12px 12px 28px rgba(195,201,212,0.85), -12px -12px 28px rgba(255,255,255,0.95);
+  }
+  .dark .hover-lift:hover {
+    box-shadow: 12px 12px 28px rgba(0,0,0,0.65), -12px -12px 28px rgba(255,255,255,0.05);
+  }
+  .btn-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+    transition: left 0.7s ease;
+  }
+  .btn-shimmer:hover::after { left: 130%; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; }
+.reveal.in { animation: slide-up 0.7s ease-out forwards; }
+
+@keyframes wave {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(50px); }
+}
+@keyframes drop-pulse-stroke {
+  0%, 100% { opacity: 1; stroke-width: 3; }
+  50%      { opacity: 0.4; stroke-width: 5; }
+}
+@keyframes poly-pulse {
+  0%, 100% { stroke-opacity: 1; }
+  50%      { stroke-opacity: 0.4; }
+}
+.leaflet-pulse-poly path { animation: poly-pulse 1.6s ease-in-out infinite; }
+
+/* Landing Page Cinematic Effects */
+@layer utilities {
+  .animate-hero-fade { animation: fade-in 0.6s ease-out both; }
+  .animate-hero-slide-down { animation: hero-slide-down 0.6s ease-out both; }
+  .animate-hero-slide-up { animation: hero-slide-up 0.8s ease-out both; }
+  .animate-hero-scale-up { animation: hero-scale-up 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  .animate-hero-slide-left { animation: hero-slide-left 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+  
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .animate-on-scroll.spring {
+    transform: translateY(60px) scale(0.9);
+    transition: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .animate-on-scroll.spring.visible {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-slide-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-scale-up {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes hero-slide-left {
+  from { opacity: 0; transform: translateX(60px) scale(0.9); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes float-card-1 {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(0deg); }
+}
+@keyframes float-card-2 {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(0deg); }
+}
+@keyframes float-card-3 {
+  0%, 100% { transform: translateY(0px) scale(1.0); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+@keyframes float-dashboard {
+  0%, 100% { transform: translateY(0px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+@keyframes gradient-bg-hero {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.4), 0 4px 15px rgba(0,0,0,0.2); }
+  50% { box-shadow: 0 0 35px rgba(16,185,129,0.7), 0 4px 20px rgba(0,0,0,0.3); }
+}
+
+.cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.cta-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -150%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s ease;
+}
+.cta-shimmer:hover::after { left: 150%; }
+
+.hero-video-fallback {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 25%, #0d4f5c 50%, #0e7490 75%, #064e3b 100%);
+  background-size: 400% 400%;
+  animation: gradient-bg-hero 8s infinite;
+}
+
+@keyframes ripples {
+  0% { transform: scale(0); opacity: 0.1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+.animate-ripples { animation: ripples 4s ease-out infinite; }
+
+/* SoilProfile pulse for critical/murcha */
+@keyframes soil-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(239,68,68,0)); }
+  50%      { filter: drop-shadow(0 0 8px rgba(239,68,68,0.7)); }
+}
+.soil-pulse { animation: soil-pulse 1.5s ease-in-out infinite; }
