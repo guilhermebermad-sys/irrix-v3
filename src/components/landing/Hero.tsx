@@ -96,8 +96,8 @@ export function Hero() {
           </div>
           
           <h1 className="animate-hero-scale-up font-display font-black text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] mb-8 tracking-tighter">
-            Precisão em cada <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500">gota.</span>
+            Irrigação com <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500">precisão científica!</span>
           </h1>
 
           <p className="animate-hero-slide-up text-lg md:text-xl text-slate-200 max-w-xl leading-relaxed mb-10 font-medium" style={{ animationDelay: "400ms" }}>
