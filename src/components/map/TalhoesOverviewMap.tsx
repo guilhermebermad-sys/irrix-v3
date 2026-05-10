@@ -160,7 +160,7 @@ export function TalhoesOverviewMap({ talhoes, fazendaCentro, height }: Props) {
       </div>
 
       <div className="absolute bottom-2 left-2 z-[400] neu-sm bg-background/95 backdrop-blur p-3 rounded-lg text-[11px] space-y-1">
-        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded" style={{ background: "#0891b2" }} /> Transbordamento (&gt;100%)</div>
+        <div className="flex items-center gap-2"><span className="w-3 h-3 rounded" style={{ background: "#0891b2" }} /> Excesso (&gt;100%)</div>
         <div className="flex items-center gap-2"><span className="w-3 h-3 rounded" style={{ background: "#10b981" }} /> Adequado (&gt;80%)</div>
         <div className="flex items-center gap-2"><span className="w-3 h-3 rounded" style={{ background: "#f59e0b" }} /> Atenção (50–80%)</div>
         <div className="flex items-center gap-2"><span className="w-3 h-3 rounded" style={{ background: "#f97316" }} /> Baixa Disp. (20–50%)</div>
