@@ -131,7 +131,7 @@ export function Sidebar() {
 
       {/* Mobile drawer */}
       {open && (
-        <div className="fixed inset-0 z-40 md:hidden animate-fade-in">
+        <div className="fixed inset-0 z-[2000] md:hidden animate-fade-in">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <aside className="relative w-72 max-w-[85%] h-full p-4 flex flex-col gap-2 bg-background shadow-2xl animate-slide-in-right">
             {headerBlock(false)}
