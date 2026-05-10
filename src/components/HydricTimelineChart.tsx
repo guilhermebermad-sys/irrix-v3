@@ -103,9 +103,6 @@ export function HydricTimelineChart({
     return (
       <g>
         <text x={cx} y={cy} textAnchor="middle" fontSize={11}>🌧</text>
-        <text x={cx} y={cy + 11} textAnchor="middle" fontSize={8} fill="#0369a1" fontWeight={700}>
-          {payload.chuva}mm
-        </text>
       </g>
     );
   };
