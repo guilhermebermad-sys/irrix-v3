@@ -3,8 +3,8 @@ import { Play, Droplets, ArrowRight, CheckCircle2, AlertTriangle, Zap } from "lu
 import { useEffect, useState, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const VIDEO_SRC = "https://videos.pexels.com/video-files/4887998/4887998-uhd_2732_1440_25fps.mp4";
-const VIDEO_POSTER = "https://images.pexels.com/videos/4887998/pexels-photo-4887998.jpeg";
+const VIDEO_SRC = "https://videos.pexels.com/video-files/5232113/5232113-uhd_2732_1440_25fps.mp4";
+const VIDEO_POSTER = "https://images.pexels.com/videos/5232113/pexels-photo-5232113.jpeg";
 
 export function Hero() {
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -77,7 +77,7 @@ export function Hero() {
       </div>
 
       {/* Dark green overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-emerald-950/50 to-black/70" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/55 to-black/75" />
 
       {/* Animated Ripples */}
       <div className="absolute z-10 top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: "0s" }} />
