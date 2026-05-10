@@ -214,7 +214,7 @@ export default function Dashboard() {
       {(() => {
         const arm = ultimoArm;
         const pct = percAFD;
-        const status = pct > 100 ? { label: "Transbordamento", color: "#3b82f6", note: "Solo saturado. Suspender irrigação." }
+        const status = pct > 100 ? { label: "Excesso", color: "#3b82f6", note: "Solo saturado. Suspender irrigação." }
           : pct >= 70 ? { label: "Confortável", color: "#10b981", note: "Plantas com pleno acesso à água." }
           : pct >= 40 ? { label: "Adequado", color: "#22c55e", note: "Faixa adequada. Planejar próxima irrigação." }
           : pct >= 20 ? { label: "Atenção", color: "#FF9900", note: "Plantas com restrição hídrica leve." }
@@ -228,11 +228,10 @@ export default function Dashboard() {
         const fator = cad > 0 ? afd / cad : 0;
 
         return (
-          <div className="rounded-3xl p-6 md:p-8 mb-8 shadow-2xl"
-            style={{ background: "linear-gradient(180deg,#22252c,#1C1E23)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="rounded-3xl p-6 md:p-8 mb-8 shadow-2xl bg-card border border-border">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-display font-bold text-xl text-white">Perfil Hídrico do Solo</h3>
-              <span className="text-[10px] uppercase tracking-widest font-bold text-white/50">
+              <h3 className="font-display font-bold text-xl text-foreground">Perfil Hídrico do Solo</h3>
+              <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
                 {(talhaoAtivo?.cultura ?? "—")} {talhaoAtivo?.estadio_fenologico ? `• ${talhaoAtivo.estadio_fenologico}` : ""}
               </span>
             </div>
@@ -252,15 +251,15 @@ export default function Dashboard() {
               {/* COLUNA DIREITA — painéis */}
               <div className="flex flex-col gap-4">
                 {/* RESUMO ATUAL */}
-                <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-white/50 mb-3">
-                    Resumo Atual <span className="text-white/30 normal-case tracking-normal font-medium">(valores em mm)</span>
+                <div className="rounded-2xl p-5 bg-muted/40 border border-border">
+                  <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-3">
+                    Resumo Atual <span className="normal-case tracking-normal font-medium opacity-70">(valores em mm)</span>
                   </div>
                   <div className="flex items-baseline gap-3 flex-wrap">
                     <div className="font-display font-black text-4xl md:text-5xl leading-none" style={{ color: status.color }}>
                       {status.label}
                     </div>
-                    <div className="text-sm font-bold text-white/60">{pct.toFixed(0)}% da AFD</div>
+                    <div className="text-sm font-bold text-muted-foreground">{pct.toFixed(0)}% da AFD</div>
                   </div>
                   <div className="grid grid-cols-3 gap-2 mt-5">
                     {[
@@ -268,10 +267,10 @@ export default function Dashboard() {
                       { l: "AFD", v: afd.toFixed(1) },
                       { l: "CAD", v: cad.toFixed(0) },
                     ].map((c) => (
-                      <div key={c.l} className="rounded-xl px-3 py-2 text-center" style={{ background: "rgba(255,255,255,0.04)" }}>
-                        <div className="text-[9px] font-bold uppercase tracking-widest text-white/45">{c.l}</div>
-                        <div className="font-display font-black text-lg text-white">
-                          {c.v}<span className="text-[10px] font-bold text-white/40 ml-0.5">mm</span>
+                      <div key={c.l} className="rounded-xl px-3 py-2 text-center bg-muted/60">
+                        <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">{c.l}</div>
+                        <div className="font-display font-black text-lg text-foreground">
+                          {c.v}<span className="text-[10px] font-bold text-muted-foreground ml-0.5">mm</span>
                         </div>
                       </div>
                     ))}
@@ -279,7 +278,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* BARRA DE PROGRESSO */}
-                <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="rounded-2xl p-5 bg-muted/40 border border-border">
                   <div className="relative h-3 rounded-full overflow-hidden"
                     style={{ background: "linear-gradient(90deg,#7f1d1d 0%,#ef4444 18%,#f59e0b 35%,#22c55e 60%,#3b82f6 85%,#1d4ed8 100%)" }}>
                   </div>
@@ -300,7 +299,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 mt-2 text-white/50">
+                  <div className="grid grid-cols-4 mt-2 text-muted-foreground">
                     {[
                       { Icon: Flame, label: "PMP" },
                       { Icon: Droplet, label: "AFD" },
@@ -316,18 +315,18 @@ export default function Dashboard() {
                 </div>
 
                 {/* NOTAS */}
-                <div className="rounded-2xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="rounded-2xl p-4 bg-muted/40 border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest"
                       style={{ background: isAlert ? "rgba(255,153,0,0.18)" : "rgba(16,185,129,0.18)", color: isAlert ? "#FF9900" : "#34d399" }}>
                       {isAlert ? "Atenção" : "Tudo certo"}
                     </span>
-                    <span className="text-[11px] font-mono text-white/60">
+                    <span className="text-[11px] font-mono text-muted-foreground">
                       %AFD: {pct.toFixed(0)}% • AFD = {fator.toFixed(2)} × {cad.toFixed(0)} = {afd.toFixed(1)}mm
                     </span>
                   </div>
-                  <p className="text-sm text-white/80">{status.note}</p>
-                  <div className="mt-3 pt-3 border-t border-white/5 text-[10px] uppercase tracking-[0.2em] font-bold text-white/40">
+                  <p className="text-sm text-foreground/90">{status.note}</p>
+                  <div className="mt-3 pt-3 border-t border-border text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
                     {(talhaoAtivo?.cultura ?? "—")} {talhaoAtivo?.estadio_fenologico ? `• ${talhaoAtivo.estadio_fenologico}` : ""}
                   </div>
                 </div>

@@ -40,7 +40,7 @@ export function corPorPercCad(p: number | null): {
   if (p == null)
     return { fill: "#94a3b8", stroke: "#64748b", label: "📋 Sem dados", fillOpacity: 0.3, pulse: false };
   
-  if (p > 100) return { fill: "#0891b2", stroke: "#155e75", label: "💧 Transbordamento", fillOpacity: 0.6, pulse: false };
+  if (p > 100) return { fill: "#0891b2", stroke: "#155e75", label: "💧 Excesso", fillOpacity: 0.6, pulse: false };
   if (p >= 80) return { fill: "#10b981", stroke: "#047857", label: "✅ Adequado", fillOpacity: 0.4, pulse: false };
   if (p >= 50) return { fill: "#f59e0b", stroke: "#b45309", label: "👍 Atenção", fillOpacity: 0.4, pulse: false };
   if (p >= 20) return { fill: "#f97316", stroke: "#c2410c", label: "🚨 Baixa Disponibilidade", fillOpacity: 0.6, pulse: false };
