@@ -1,62 +1,34 @@
-## Vídeo de fundo cinematográfico no Hero
+## Trocar vídeo de fundo do Hero
 
-Substituir o vídeo atual do Hero (mixkit) por um vídeo do Pexels mostrando irrigação real, com overlay esverdeado, fallback animado, otimização mobile e parallax sutil.
+Substituir o clipe atual (`4887998` — gotejamento) por **Pexels 5232113** — aspersão em close-up ao pôr do sol, com luz dourada em contraluz.
 
-### Arquivos afetados
+### Arquivo afetado
 
-- `src/components/landing/Hero.tsx` — reescrita da camada de fundo e ajustes de z-index/cores
-- `tailwind.config.ts` — adicionar keyframe `gradient` e animação `gradient-slow`
-- `src/hooks/use-mobile.tsx` — já existe, será reutilizado
+- `src/components/landing/Hero.tsx` — atualizar apenas as constantes `VIDEO_SRC` e `VIDEO_POSTER`.
 
-Nenhuma outra seção da landing será tocada.
+### Mudanças
 
-### Mudanças no `Hero.tsx`
-
-1. **Camada de vídeo (z-0)**
-   - `<video>` com `autoPlay muted loop playsInline preload="auto"` e `poster` do Pexels.
-   - Source principal: `https://videos.pexels.com/video-files/4887998/4887998-uhd_2732_1440_25fps.mp4` (pivô central).
-   - `ref` para controle via IntersectionObserver (pause quando fora da viewport).
-   - `onCanPlay` define `videoLoaded=true` e o vídeo recebe `transition-opacity` (fade-in 1s).
-   - No mobile (`useIsMobile()`), substituir o `<video>` por `<div>` com `background-image` (poster) — economiza dados e bateria.
-
-2. **Fallback animado (z-0)**
-   - Renderizado enquanto `!videoLoaded`: `bg-gradient-to-br from-emerald-900 via-teal-800 to-cyan-900 animate-gradient-slow`.
-
-3. **Overlay (z-10)**
-   - `bg-gradient-to-b from-black/60 via-emerald-950/50 to-black/70`.
-   - Mantém os "ripples" decorativos existentes.
-
-4. **Conteúdo (z-20)**
-   - Wrapper do conteúdo passa a `relative z-20`.
-   - Texto: título permanece `text-white`; subtítulo passa de `text-white/70` para `text-slate-200`.
-   - Badge: `bg-emerald-500/20 backdrop-blur-sm border-emerald-400/30`.
-   - CTA principal: adicionar `shadow-2xl shadow-emerald-500/40`.
-   - Mockup do dashboard (lg+) permanece intacto.
-
-5. **Parallax sutil (desktop apenas)**
-   - `scrollY` via listener de scroll com throttle por `requestAnimationFrame`.
-   - `style={{ transform: translateY(scrollY * 0.3px) }}` aplicado ao `<video>`; desativado no mobile.
-
-6. **IntersectionObserver para play/pause**
-   - Pausa o vídeo quando o Hero sai da viewport (economia).
-
-### Mudanças em `tailwind.config.ts`
-
-Adicionar em `keyframes`:
+```ts
+const VIDEO_SRC    = "https://videos.pexels.com/video-files/5232113/5232113-uhd_2732_1440_25fps.mp4";
+const VIDEO_POSTER = "https://images.pexels.com/videos/5232113/pexels-photo-5232113.jpeg";
 ```
-gradient: {
-  "0%, 100%": { backgroundSize: "200% 200%", backgroundPosition: "left center" },
-  "50%":      { backgroundSize: "200% 200%", backgroundPosition: "right center" },
-}
-```
-e em `animation`:
-```
-"gradient-slow": "gradient 8s ease infinite",
-```
+
+Também usar o mesmo poster no `background-image` da fallback mobile (já é automático, pois lê `VIDEO_POSTER`).
+
+### Ajuste de overlay (recomendado)
+
+O novo clipe tem dominante dourada/quente. Para preservar legibilidade e identidade verde da marca, suavizo o overlay para puxar mais verde e menos preto puro:
+
+- Antes: `from-black/60 via-emerald-950/50 to-black/70`
+- Depois: `from-emerald-950/70 via-emerald-900/55 to-black/75`
+
+### Não muda
+
+- Estrutura de z-index, parallax, IntersectionObserver, fade-in, fallback gradiente, conteúdo, mockup, ripples, badge, CTA — tudo permanece.
+- `tailwind.config.ts` não é tocado.
+- Demais seções da landing intactas.
 
 ### Notas
 
-- Vídeo permanece `muted` (requisito de autoplay nos browsers).
 - Pexels permite uso comercial sem atribuição.
-- Sem partículas decorativas extras — o vídeo de irrigação real já carrega o impacto visual.
-- Demais seções (`SocialProof`, `ProblemaSolucao`, etc.) ficam exatamente como estão.
+- Se o clipe `5232113` não carregar bem em algum browser por tamanho, posso trocar a variante para `hd_1920_1080_25fps.mp4` (mais leve) numa segunda iteração.
