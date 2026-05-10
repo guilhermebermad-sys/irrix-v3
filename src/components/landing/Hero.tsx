@@ -3,8 +3,9 @@ import { Play, Droplets, ArrowRight, CheckCircle2, AlertTriangle, Zap } from "lu
 import { useEffect, useState, useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const VIDEO_SRC = "https://videos.pexels.com/video-files/5232113/5232113-uhd_2732_1440_25fps.mp4";
-const VIDEO_POSTER = "https://images.pexels.com/videos/5232113/pexels-photo-5232113.jpeg";
+// Vídeo local: pivô central irrigando lavoura (vista aérea)
+const VIDEO_SRC = "/videos/irrigation.mp4";
+const VIDEO_POSTER = "/videos/irrigation.mp4"; // o próprio mp4 serve de poster (1º frame)
 
 export function Hero() {
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -70,14 +71,15 @@ export function Hero() {
             style={{ transform: `translateY(${scrollY * 0.3}px)` }}
             className={`w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? "opacity-100" : "opacity-0"}`}
           >
+            {/* Vídeo local: pivô central irrigando lavoura (vista aérea) */}
             <source src={VIDEO_SRC} type="video/mp4" />
             Seu navegador não suporta vídeo.
           </video>
         )}
       </div>
 
-      {/* Dark green overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-emerald-950/70 via-emerald-900/55 to-black/75" />
+      {/* Cinematic dark overlay — garante legibilidade sobre o vídeo */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/60 via-emerald-950/50 to-black/70" />
 
       {/* Animated Ripples */}
       <div className="absolute z-10 top-1/4 left-1/4 w-px h-px bg-primary/20 rounded-full animate-ripples" style={{ animationDelay: "0s" }} />
