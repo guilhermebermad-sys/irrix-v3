@@ -29,6 +29,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/landing" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/login" element={<Login />} />
@@ -36,7 +37,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/fazendas" element={<Fazendas />} />
               <Route path="/manejo" element={<ManejoDiario />} />
               <Route path="/historico" element={<Historico />} />
