@@ -11,6 +11,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useSignedUrl } from "@/lib/storage/signedUrl";
 
 type Registro = any;
 
@@ -203,10 +204,11 @@ export default function CadernoCampo() {
                     {r.fotos_urls?.length > 0 && (
                       <div className="flex gap-2 mt-2">
                         {r.fotos_urls.map((u: string, i: number) => (
-                          <img key={i} src={u} alt="" className="w-16 h-16 object-cover rounded-lg neu-inset" />
+                          <SignedFoto key={i} path={u} className="w-16 h-16 object-cover rounded-lg neu-inset" />
                         ))}
                       </div>
                     )}
+
                   </div>
                   <div className="flex gap-2">
                     <NeuButton onClick={() => setModal(r)}><Pencil className="w-4 h-4" /></NeuButton>
@@ -372,10 +374,11 @@ function RegistroModal({ data, fazendas, talhoes, onClose, onSaved }: any) {
             {r.fotos_urls?.length > 0 && (
               <div className="flex gap-2 mt-2 flex-wrap">
                 {r.fotos_urls.map((u: string, i: number) => (
-                  <img key={i} src={u} alt="" className="w-16 h-16 object-cover rounded-lg" />
+                  <SignedFoto key={i} path={u} className="w-16 h-16 object-cover rounded-lg" />
                 ))}
               </div>
             )}
+
           </div>
         </div>
 
