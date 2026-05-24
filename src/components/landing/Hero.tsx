@@ -87,13 +87,7 @@ export function Hero() {
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-16 items-center pt-20">
         <div className="text-left">
-          <div className="animate-hero-slide-down inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 backdrop-blur-sm border border-emerald-400/30 text-white text-xs font-black uppercase tracking-[0.2em] mb-8">
-             <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-             </span>
-             Agritech 4.0 • Inteligência Hídrica
-          </div>
+          
           
           <h1 className="animate-hero-scale-up font-display font-black text-5xl md:text-7xl lg:text-8xl text-white leading-[0.95] mb-8 tracking-tighter">
             Irrigação com <br />
