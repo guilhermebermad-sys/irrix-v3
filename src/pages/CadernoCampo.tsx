@@ -390,3 +390,9 @@ function RegistroModal({ data, fazendas, talhoes, onClose, onSaved }: any) {
     </div>
   );
 }
+
+function SignedFoto({ path, className }: { path: string; className?: string }) {
+  const url = useSignedUrl("caderno-fotos", path);
+  if (!url) return <div className={`${className ?? ""} bg-muted animate-pulse`} />;
+  return <img src={url} alt="" className={className} />;
+}
