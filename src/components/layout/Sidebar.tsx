@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 const items = [
-  { to: "/", label: "Dashboard", icon: Home },
+  { to: "/dashboard", label: "Dashboard", icon: Home },
   { to: "/fazendas", label: "Minhas Fazendas", icon: Sprout },
   { to: "/manejo", label: "Manejo Diário", icon: Droplets },
   { to: "/historico", label: "Histórico", icon: Calendar },
@@ -79,7 +79,7 @@ export function Sidebar() {
   const renderItems = (collapsed: boolean) => (
     <nav className="flex flex-col gap-2">
       {items.map(({ to, label, icon: Icon }) => (
-        <NavLink key={to} to={to} end={to === "/"} onClick={() => setOpen(false)}
+        <NavLink key={to} to={to} end={to === "/dashboard"} onClick={() => setOpen(false)}
           title={collapsed ? label : undefined}
           className={({ isActive }) => cn(
             "flex items-center gap-3 rounded-xl text-sm font-medium transition-all",

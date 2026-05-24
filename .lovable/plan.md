@@ -1,35 +1,60 @@
-## Objetivo
+## Diagnóstico
 
-1. Trocar o rótulo **"Transbordamento"** por **"Excesso"** em todos os pontos onde aparece, mantendo a UI íntegra em qualquer largura de tela.
-2. Fazer o card **"Perfil Hídrico do Solo"** (no Dashboard) respeitar o tema atual: hoje ele é renderizado com gradiente/cores fixas escuras (`#22252c → #1C1E23`, `text-white`, `rgba(255,255,255,…)`) e parece "modo noturno" mesmo no tema claro.
+Hoje a rota `/` carrega o `Dashboard` (protegido por `AppLayout`). Quem abre o link público é redirecionado para `/auth` ou cai em `NotFound` no build publicado. A rota `/landing` existe no código, mas o comportamento desejado é: **`/` sempre mostra a landing**, independentemente de login.
 
-## Alterações
+Hoje:
+```
+/              → Dashboard (protegido)  ← causa do problema
+/landing       → Landing
+/auth, /login, /cadastro, ...  → públicas
+/fazendas, /manejo, ...        → protegidas
+```
 
-### 1) Texto "Transbordamento" → "Excesso"
+Alvo:
+```
+/              → Landing (pública, sempre)
+/landing       → Landing (alias, mantido para não quebrar links existentes)
+/dashboard     → Dashboard (protegido)
+/fazendas, /manejo, ...        → protegidas (sem mudança)
+```
 
-Substituir o literal nos 3 locais:
-- `src/pages/Dashboard.tsx` (linha 217) — rótulo de status quando `pct > 100` no painel Resumo Atual.
-- `src/lib/map/geo.ts` (linha 43) — label `"💧 Transbordamento"` → `"💧 Excesso"` usado no mapa de talhões.
-- `src/components/map/TalhoesOverviewMap.tsx` (linha 163) — legenda do mapa.
+## Mudanças
 
-"Excesso" é mais curto que "Transbordamento", então não há risco de overflow; ao contrário, melhora o ajuste em telas estreitas (390 px) onde "Transbordamento" hoje é a palavra mais larga do bloco "Resumo Atual".
+### 1) `src/App.tsx` — reorganizar rotas
+- Adicionar `<Route path="/" element={<Landing />} />` como rota pública.
+- Trocar a rota do Dashboard dentro do `AppLayout` de `path="/"` para `path="/dashboard"`.
+- Manter `/landing` como alias (sem remover) para preservar qualquer link externo já compartilhado.
 
-### 2) Card "Perfil Hídrico do Solo" condicional ao tema
+### 2) Atualizar referências internas de `/` → `/dashboard`
+Trocar apenas onde "/" significava "ir para o app/Dashboard após login":
+- `src/pages/Login.tsx` linhas 19 e 26 → `/dashboard`
+- `src/pages/Auth.tsx` linhas 20 e 28 → `/dashboard`
+- `src/pages/ResetPassword.tsx` linha 18 → `/dashboard`
+- `src/pages/Onboarding.tsx` linha 30 (link "Ir para o dashboard") → `/dashboard`
+- `src/components/layout/Sidebar.tsx` linha 9 (item "Dashboard" do menu) → `/dashboard` (e o `end={to === "/"}` na linha 82 passa a comparar com `/dashboard`)
 
-No `src/pages/Dashboard.tsx`, bloco entre as linhas ~230 e ~336, substituir cores fixas por tokens semânticos do design system (`bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-muted`) para que o card herde automaticamente o esquema do tema (claro/escuro), mantendo a aparência atual no modo escuro:
+### 3) `AppLayout` — manter
+O `AppLayout` continua redirecionando usuários não autenticados para `/auth` quando tentam acessar áreas protegidas (`/dashboard`, `/fazendas`, etc.). Sem mudanças nele.
 
-- Container externo: remover `style={{ background: "linear-gradient(180deg,#22252c,#1C1E23)", border: "1px solid rgba(255,255,255,0.06)" }}` → trocar por `bg-card border border-border` (já reage ao tema).
-- Título "Perfil Hídrico do Solo": `text-white` → `text-foreground`.
-- Subtítulos/labels com `text-white/40 … /60`: trocar para `text-muted-foreground` (intensidade controlada por opacidade do token onde necessário).
-- Sub-cards internos (Resumo, Barra, Notas): trocar o `style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}` por `bg-muted/40 border border-border`.
-- Mini-cards ARM/AFD/CAD: `bg: rgba(255,255,255,0.04)` → `bg-muted/60`; valores numéricos `text-white` → `text-foreground`; sufixo "mm" `text-white/40` → `text-muted-foreground`.
-- Bloco Notas: `text-white/80` → `text-foreground/90`; divisor `border-white/5` → `border-border`.
-- Os badges de status coloridos (verde/laranja, ARM grande colorida pelo `status.color`, marcador da barra) permanecem com cor inline — eles representam dados, não cromática de tema.
-- A barra gradiente (PMP→Excesso) e os ícones `Flame/Droplet/Cloud/CloudRain` permanecem; só o `text-white/50` dos rótulos vira `text-muted-foreground`.
+### 4) `src/pages/Index.tsx`
+Verificar se ainda é referenciado em algum lugar; se não for, não mexer (não faz parte do escopo do bug).
 
-Resultado: no modo claro o card aparece com fundo claro e textos escuros legíveis; no modo escuro mantém o visual atual.
+## Validação
+
+- Abrir `/` em aba anônima → carrega Landing (sem redirect).
+- Abrir `/landing` → carrega Landing (alias).
+- Clicar em "Já sou cliente" / "Teste Grátis" da landing → vai para `/login` / `/cadastro` (igual a hoje).
+- Após login bem-sucedido → vai para `/dashboard` (novo caminho).
+- Usuário logado abrindo `/` → vê a Landing (comportamento solicitado: "sempre a landing").
+- Sidebar com "Dashboard" ativo em `/dashboard`.
+- Rotas protegidas (`/fazendas`, `/manejo`, etc.) continuam exigindo login.
 
 ## Fora do escopo
 
-- Não mexer no SVG `SoilProfile` em si (já usa cores próprias do perfil de solo, que são semanticamente "terra/água" e não devem mudar com tema).
-- Nenhuma mudança em lógica de cálculo, dados ou rotas.
+- Sem alterações em estilo, conteúdo da landing ou layout.
+- Sem alterações em autenticação, RLS ou Cloud.
+- `Index.tsx` permanece intocado.
+
+## Pós-deploy
+
+Como a correção é frontend, será necessário **clicar em "Update" no diálogo de Publicar** para que o site publicado (`irrixv3.lovable.app`) reflita as mudanças.

@@ -17,7 +17,7 @@ export default function Auth() {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
 
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function Auth() {
     if (mode === "login") {
       const { error } = await signIn(email, senha);
       if (error) toast.error("Erro ao entrar: " + error.message);
-      else { toast.success("Bem-vindo!"); nav("/"); }
+      else { toast.success("Bem-vindo!"); nav("/dashboard"); }
     } else if (mode === "signup") {
       if (senha.length < 6) { toast.error("A senha deve ter pelo menos 6 caracteres"); setLoading(false); return; }
       const { error } = await signUp(email, senha, nome);
