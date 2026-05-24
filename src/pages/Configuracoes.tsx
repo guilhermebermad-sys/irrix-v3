@@ -8,6 +8,8 @@ import { SOIL_TYPES, SOIL_DATA, FONTES_AGUA, ESTADOS_BR, CULTURAS, ESTADIOS, SIS
 import { Settings, Upload, KeyRound, Sprout, Plus, Droplets, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { WeatherProviderSettings } from "@/components/settings/WeatherProviderSettings";
+import { useSignedUrl } from "@/lib/storage/signedUrl";
+
 
 export default function Configuracoes() {
   const { user } = useAuth();
@@ -69,10 +71,11 @@ export default function Configuracoes() {
     const path = `${user.id}/logo_${Date.now()}_${file.name}`;
     const { error } = await supabase.storage.from("logos").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); return; }
-    const { data } = supabase.storage.from("logos").getPublicUrl(path);
-    setPerfil({ ...perfil, logo_url: data.publicUrl });
+    // Armazena o path (bucket privado). URL assinada gerada sob demanda.
+    setPerfil({ ...perfil, logo_url: path });
     toast.success("Logo enviado!");
   };
+
 
   return (
     <div className="space-y-5 max-w-4xl">
@@ -115,13 +118,14 @@ export default function Configuracoes() {
       <NeuCard>
         <h2 className="font-semibold mb-4">Logotipo da empresa</h2>
         <div className="flex items-center gap-4">
-          {perfil.logo_url && <img src={perfil.logo_url} alt="Logo" className="w-20 h-20 object-contain neu-inset p-2 rounded-xl" />}
+          <LogoPreview value={perfil.logo_url} />
           <label className="neu-button px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer inline-flex items-center gap-2">
             <Upload className="w-4 h-4" /> Enviar logo
             <input type="file" accept="image/*" hidden onChange={e => e.target.files?.[0] && upLogo(e.target.files[0])} />
           </label>
         </div>
       </NeuCard>
+
 
       <NeuCard>
         <h2 className="font-semibold mb-4">Preferências de unidades</h2>
@@ -291,3 +295,10 @@ export default function Configuracoes() {
     </div>
   );
 }
+
+function LogoPreview({ value }: { value?: string | null }) {
+  const url = useSignedUrl("logos", value);
+  if (!value || !url) return null;
+  return <img src={url} alt="Logo" className="w-20 h-20 object-contain neu-inset p-2 rounded-xl" />;
+}
+
