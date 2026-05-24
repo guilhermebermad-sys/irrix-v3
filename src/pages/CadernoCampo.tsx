@@ -270,12 +270,13 @@ function RegistroModal({ data, fazendas, talhoes, onClose, onSaved }: any) {
       const path = `${user.id}/${Date.now()}-${f.name}`;
       const { error } = await supabase.storage.from("caderno-fotos").upload(path, f);
       if (error) { toast.error(error.message); continue; }
-      const { data: pub } = supabase.storage.from("caderno-fotos").getPublicUrl(path);
-      urls.push(pub.publicUrl);
+      // Bucket privado: armazena o path; signed URL é gerado na exibição.
+      urls.push(path);
     }
     set("fotos_urls", urls);
     setUploadando(false);
   };
+
 
   const salvar = async () => {
     if (!user || !r.categoria || !r.titulo || !r.data) {

@@ -295,3 +295,10 @@ export default function Configuracoes() {
     </div>
   );
 }
+
+function LogoPreview({ value }: { value?: string | null }) {
+  const url = useSignedUrl("logos", value);
+  if (!value || !url) return null;
+  return <img src={url} alt="Logo" className="w-20 h-20 object-contain neu-inset p-2 rounded-xl" />;
+}
+
