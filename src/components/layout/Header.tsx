@@ -29,11 +29,16 @@ export function Header() {
   useEffect(() => {
     if (!user) return;
     const ch = supabase
-      .channel("alertas-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "alertas" }, () => fetchCount())
+      .channel(`user:${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "alertas", filter: `user_id=eq.${user.id}` },
+        () => fetchCount()
+      )
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user, fetchCount]);
+
 
   const talhoesDaFazenda = talhoes.filter(t => t.fazenda_id === fazendaAtiva?.id);
 
