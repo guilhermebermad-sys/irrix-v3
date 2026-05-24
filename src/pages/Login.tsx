@@ -16,14 +16,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
 
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     const { error } = await signIn(email, senha);
     if (error) toast.error("Erro ao entrar: " + error.message);
-    else { toast.success("Bem-vindo de volta!"); nav("/"); }
+    else { toast.success("Bem-vindo de volta!"); nav("/dashboard"); }
     setLoading(false);
   };
 

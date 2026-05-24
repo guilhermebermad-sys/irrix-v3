@@ -27,7 +27,7 @@ export default function Onboarding() {
           Cadastrar minha fazenda <ArrowRight className="w-4 h-4" />
         </Link>
         <div className="mt-4">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-primary">Ir para o dashboard</Link>
+          <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary">Ir para o dashboard</Link>
         </div>
       </div>
     </div>
