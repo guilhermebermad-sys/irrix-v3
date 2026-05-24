@@ -550,8 +550,19 @@ export function Footer() {
               produtores rurais brasileiros.
             </p>
             <div className="flex gap-2 mt-4">
-              {[Instagram, Linkedin, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="neu-button w-9 h-9 rounded-lg flex items-center justify-center" aria-label="rede social">
+              {[
+                { Icon: Instagram, href: "https://www.instagram.com/irrixapp/", label: "Instagram" },
+                { Icon: Linkedin, href: "#", label: "LinkedIn" },
+                { Icon: Youtube, href: "#", label: "YouTube" },
+              ].map(({ Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="neu-button w-9 h-9 rounded-lg flex items-center justify-center"
+                  aria-label={label}
+                >
                   <Icon className="w-4 h-4" />
                 </a>
               ))}
