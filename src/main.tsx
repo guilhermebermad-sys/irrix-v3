@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { initNotifications } from "./lib/notifications/pushNotificationService";
+import { purgeLegacyProviderSecrets } from "./lib/weather/providers/registry";
 import "./index.css";
 
 // Register PWA Service Worker (auto update + reload on new version)
@@ -38,6 +39,9 @@ if (typeof window !== "undefined" && "caches" in window) {
 
 // Initialize push notifications (if permission already granted)
 initNotifications();
+
+// Remove credenciais legadas de provedores meteorológicos do localStorage (migradas para o servidor)
+purgeLegacyProviderSecrets();
 
 createRoot(document.getElementById("root")!).render(
   <ThemeProvider>

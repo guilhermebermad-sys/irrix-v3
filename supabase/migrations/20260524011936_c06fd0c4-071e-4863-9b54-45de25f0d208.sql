@@ -1,0 +1,1 @@
+ALTER TABLE public.usuarios_perfil ADD COLUMN IF NOT EXISTS weather_config jsonb NOT NULL DEFAULT '{}'::jsonb;

@@ -108,7 +108,7 @@ function ehInvalido(v: any): boolean {
 
 // ───────── Função principal — dia único ─────────
 // ───────── Provider-agnostic wrappers (delegam ao provider ativo) ─────────
-import { getActiveProvider, getActiveProviderId, getProviderConfig } from "./providers/registry";
+import { getActiveProvider, getActiveProviderId } from "./providers/registry";
 
 export async function buscarDadosClimaticos(
   latitude: number, longitude: number, date: string | Date
@@ -117,8 +117,8 @@ export async function buscarDadosClimaticos(
   // Provider padrão: usa cascata legada (NASA→Open-Meteo) abaixo.
   if (id !== "open-meteo") {
     const provider = getActiveProvider();
-    const cfg = getProviderConfig(id);
-    const r = await provider.fetchCurrent(latitude, longitude, date, cfg);
+    // Provedores que requerem credenciais leem o config do servidor internamente.
+    const r = await provider.fetchCurrent(latitude, longitude, date);
     if (r.sucesso) return r;
     // fallback para cascata padrão
   }
@@ -262,8 +262,7 @@ export async function buscarPrevisao7Dias(
   const id = getActiveProviderId();
   if (id !== "open-meteo") {
     const provider = getActiveProvider();
-    const cfg = getProviderConfig(id);
-    const r = await provider.fetchForecast(latitude, longitude, 7, cfg);
+    const r = await provider.fetchForecast(latitude, longitude, 7);
     if (r) return r;
   }
   return _buscarPrevisao7DiasLegacy(latitude, longitude, force);
