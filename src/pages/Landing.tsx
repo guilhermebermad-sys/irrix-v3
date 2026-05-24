@@ -15,7 +15,7 @@ export default function Landing() {
       <Funcionalidades />
       <ComoFunciona />
       <TecnologiaSection />
-      <Depoimentos />
+      {/* <Depoimentos /> */}
       <Planos />
       <FAQ />
       <CTAFinal />
