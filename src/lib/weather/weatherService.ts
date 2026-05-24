@@ -262,8 +262,7 @@ export async function buscarPrevisao7Dias(
   const id = getActiveProviderId();
   if (id !== "open-meteo") {
     const provider = getActiveProvider();
-    const cfg = getProviderConfig(id);
-    const r = await provider.fetchForecast(latitude, longitude, 7, cfg);
+    const r = await provider.fetchForecast(latitude, longitude, 7);
     if (r) return r;
   }
   return _buscarPrevisao7DiasLegacy(latitude, longitude, force);
