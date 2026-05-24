@@ -350,6 +350,7 @@ export type Database = {
           unidade_volume: string | null
           updated_at: string
           user_id: string
+          weather_config: Json
         }
         Insert: {
           crea?: string | null
@@ -365,6 +366,7 @@ export type Database = {
           unidade_volume?: string | null
           updated_at?: string
           user_id: string
+          weather_config?: Json
         }
         Update: {
           crea?: string | null
@@ -380,6 +382,7 @@ export type Database = {
           unidade_volume?: string | null
           updated_at?: string
           user_id?: string
+          weather_config?: Json
         }
         Relationships: []
       }
