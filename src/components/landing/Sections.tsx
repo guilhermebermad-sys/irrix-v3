@@ -24,10 +24,6 @@ export function SocialProof() {
           <span>🍓 Fruticultura</span>
           <span>🛰 2 APIs climáticas integradas</span>
         </div>
-        <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold">
-          <span className="text-warning">★★★★★</span>
-          <span>4.9/5 de satisfação · +<Counter to={500} />+ talhões monitorados</span>
-        </div>
       </div>
     </section>
   );
@@ -575,9 +571,7 @@ export function Footer() {
           <div>
             <h4 className="font-display font-bold text-sm uppercase tracking-wider mb-4">Contato</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>📧 contato@irrix.com.br</li>
-              <li>📱 WhatsApp: (XX) XXXXX-XXXX</li>
-              <li>🌎 irrix.com.br</li>
+              <li>📧 irrixapp@gmail.com</li>
             </ul>
             <div className="neu-sm inline-flex items-center gap-2 px-3 py-2 rounded-xl mt-4 text-xs font-semibold">
               <Heart className="w-3.5 h-3.5 text-destructive fill-current" />

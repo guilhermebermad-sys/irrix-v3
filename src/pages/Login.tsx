@@ -5,6 +5,14 @@ import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Mail, Lock, Eye, EyeOff, Droplets, Sprout, BarChart3, X } from "lucide-react";
 import { toast } from "sonner";
+import { lovable } from "@/integrations/lovable";
+
+async function signInWithGoogle() {
+  const result = await lovable.auth.signInWithOAuth("google", {
+    redirect_uri: `${window.location.origin}/dashboard`,
+  });
+  if (result.error) toast.error("Erro ao entrar com Google: " + result.error.message);
+}
 
 export default function Login() {
   const { user, signIn, resetPassword } = useAuth();
@@ -109,6 +117,12 @@ export default function Login() {
             <span className="text-xs text-muted-foreground">ou</span>
             <div className="flex-1 h-px bg-border" />
           </div>
+
+          <button type="button" onClick={signInWithGoogle}
+            className="neu-button w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-3 mb-5">
+            <GoogleIcon />
+            Continuar com Google
+          </button>
 
           <p className="text-center text-sm text-muted-foreground">
             Não tem conta?{" "}
