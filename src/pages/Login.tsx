@@ -157,15 +157,6 @@ function GoogleIcon() {
     </svg>
   );
 }
-  return (
-    <div className="relative">
-      <Icon className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
-      <input type={type} placeholder={placeholder} value={value} required
-        onChange={(e) => onChange(e.target.value)}
-        className="neu-input w-full pl-12 pr-4 py-3 text-sm" />
-    </div>
-  );
-}
 
 function ForgotModal({ onClose, resetPassword }: { onClose: () => void; resetPassword: (e: string) => Promise<{ error: Error | null }> }) {
   const [email, setEmail] = useState("");
