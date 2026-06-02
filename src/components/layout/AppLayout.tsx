@@ -4,11 +4,14 @@ import { Header } from "./Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { SelecaoProvider } from "@/contexts/SelecaoContext";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
+import { useAcessoPlano } from "@/hooks/useAcessoPlano";
 
 export default function AppLayout() {
   const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando...</div>;
+  const acesso = useAcessoPlano();
+  if (loading || acesso.loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Carregando...</div>;
   if (!user) return <Navigate to="/auth" replace />;
+  if (acesso.expirado) return <Navigate to="/assinar" replace />;
 
   return (
     <SelecaoProvider>

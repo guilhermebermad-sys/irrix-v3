@@ -337,6 +337,7 @@ export type Database = {
       }
       usuarios_perfil: {
         Row: {
+          acesso_expira_em: string | null
           crea: string | null
           created_at: string
           email: string | null
@@ -344,7 +345,9 @@ export type Database = {
           id: string
           logo_url: string | null
           nome: string | null
+          plano: string
           telefone: string | null
+          trial_started_at: string
           unidade_area: string | null
           unidade_lamina: string | null
           unidade_volume: string | null
@@ -353,6 +356,7 @@ export type Database = {
           weather_config: Json
         }
         Insert: {
+          acesso_expira_em?: string | null
           crea?: string | null
           created_at?: string
           email?: string | null
@@ -360,7 +364,9 @@ export type Database = {
           id?: string
           logo_url?: string | null
           nome?: string | null
+          plano?: string
           telefone?: string | null
+          trial_started_at?: string
           unidade_area?: string | null
           unidade_lamina?: string | null
           unidade_volume?: string | null
@@ -369,6 +375,7 @@ export type Database = {
           weather_config?: Json
         }
         Update: {
+          acesso_expira_em?: string | null
           crea?: string | null
           created_at?: string
           email?: string | null
@@ -376,7 +383,9 @@ export type Database = {
           id?: string
           logo_url?: string | null
           nome?: string | null
+          plano?: string
           telefone?: string | null
+          trial_started_at?: string
           unidade_area?: string | null
           unidade_lamina?: string | null
           unidade_volume?: string | null
