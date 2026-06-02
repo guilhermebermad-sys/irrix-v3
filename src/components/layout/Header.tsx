@@ -8,6 +8,7 @@ import { SidebarToggle, useSidebarState } from "./Sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
+import { useAcessoPlano } from "@/hooks/useAcessoPlano";
 
 export function Header() {
   const { fazendas, talhoes, fazendaAtiva, talhaoAtivo, setFazendaAtivaId, setTalhaoAtivoId } = useSelecao();
@@ -15,6 +16,7 @@ export function Header() {
   const { desktopCollapsed } = useSidebarState();
   const [naoLidos, setNaoLidos] = useState(0);
   const location = useLocation();
+  const acesso = useAcessoPlano();
 
   const fetchCount = useCallback(async () => {
     if (!user) { setNaoLidos(0); return; }
@@ -44,6 +46,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-[1001] px-4 md:px-6 py-3 bg-background/80 backdrop-blur-sm">
+      {acesso.plano === "trial" && acesso.diasRestantes !== null && (
+        <div className="mb-2 px-4 py-2 rounded-xl text-xs font-medium text-center neu" style={{ color: "hsl(var(--primary))" }}>
+          Teste grátis: {acesso.diasRestantes} {acesso.diasRestantes === 1 ? "dia restante" : "dias restantes"} ·{" "}
+          <Link to="/assinar" className="underline font-semibold">assinar agora</Link>
+        </div>
+      )}
       <div className="neu px-4 py-3 flex items-center gap-3 flex-wrap">
         <SidebarToggle />
         {/* Logo dinâmico: aparece apenas em mobile */}

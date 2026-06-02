@@ -11,6 +11,7 @@ import Cadastro from "./pages/Cadastro";
 import Onboarding from "./pages/Onboarding";
 import Landing from "./pages/Landing";
 import ResetPassword from "./pages/ResetPassword";
+import Assinar from "./pages/Assinar";
 import Dashboard from "./pages/Dashboard";
 import Fazendas from "./pages/Fazendas";
 import ManejoDiario from "./pages/ManejoDiario";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/assinar" element={<Assinar />} />
             <Route element={<AppLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/fazendas" element={<Fazendas />} />
