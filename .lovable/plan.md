@@ -1,19 +1,45 @@
-# Plano
+# Plano: Teste grátis de 7 dias + tela de pagamento
 
-## 1. Login com Google
-- Habilitar provider Google via `configure_social_auth(["google"])` — usa credenciais gerenciadas do Lovable Cloud (sem necessidade de chaves).
-- Adicionar botão "Continuar com Google" em **`src/pages/Login.tsx`** e em **`src/pages/Cadastro.tsx`** (logo abaixo do divisor "ou"), usando `lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" })` do módulo gerado em `src/integrations/lovable`.
-- Estilo neumórfico consistente com o resto do app, com ícone do Google.
+## Visão geral
+Cada novo usuário ganha 7 dias de acesso completo a partir do cadastro. Após esse período, é redirecionado para uma tela de pagamento (onde depois colocaremos os links Stripe). Duas contas terão acesso vitalício: `guinascifranco@gmail.com` e `irrixapp@gmail.com`.
 
-## 2. Ajustes na Landing (`src/components/landing/Sections.tsx`)
+## 1. Banco de dados
+Adicionar colunas em `usuarios_perfil`:
+- `trial_started_at` (timestamptz, default `now()`) — marca início do teste
+- `plano` (text, default `'trial'`) — valores: `trial`, `ativo`, `vitalicio`, `expirado`
+- `acesso_expira_em` (timestamptz) — calculado como `trial_started_at + 7 dias` no trigger
 
-**Footer (linhas 575–586):**
-- Trocar `📧 contato@irrix.com.br` → `📧 irrixapp@gmail.com`
-- Remover linha `📱 WhatsApp: (XX) XXXXX-XXXX`
-- Remover linha `🌎 irrix.com.br`
+Atualizar `handle_new_user()` para já gravar `trial_started_at = now()` e definir `plano = 'vitalicio'` quando o email for um dos dois autorizados.
 
-**SocialProof (linha 27–30):**
-- Remover o bloco com `★★★★★ 4.9/5 de satisfação · +500+ talhões monitorados` (mantém apenas os ícones das culturas e APIs climáticas acima).
+Backfill via insert tool:
+- Para usuários existentes sem `trial_started_at`: setar = `created_at`
+- Para os 2 emails autorizados: `plano = 'vitalicio'`
 
-## Fora de escopo
-- Nenhuma mudança em backend, RLS, ou outras páginas além das listadas.
+## 2. Hook de verificação de acesso
+Criar `src/hooks/useAcessoPlano.ts`:
+- Lê `usuarios_perfil` do usuário logado
+- Retorna `{ plano, diasRestantes, expirado, vitalicio, loading }`
+- Lógica: `vitalicio` ou `ativo` → liberado; `trial` → calcula dias restantes; se ≤ 0 → expirado
+
+## 3. Bloqueio de rotas privadas
+Em `src/components/layout/AppLayout.tsx`:
+- Usar o hook; se `expirado` → `<Navigate to="/assinar" replace />`
+- Mostrar banner sutil no `Header` quando em trial com dias restantes (ex: "Teste grátis: 3 dias restantes")
+
+## 4. Tela de pagamento `/assinar`
+Nova página `src/pages/Assinar.tsx` (rota pública pós-login):
+- Visual neumórfico consistente com Login
+- Mostra: "Seu teste de 7 dias terminou" + benefícios + placeholders para os botões/links Stripe (a serem fornecidos depois)
+- Botão "Sair" e link para suporte (`irrixapp@gmail.com`)
+- Quando o usuário enviar os links Stripe, substituímos os placeholders
+
+Adicionar rota em `src/App.tsx`.
+
+## 5. Fora do escopo
+- Webhook Stripe / ativação automática do plano após pagamento (faremos quando os links chegarem)
+- Cobrança recorrente / gestão de assinatura
+
+## Detalhes técnicos
+- Migration cria colunas + atualiza função `handle_new_user`
+- Insert tool faz o backfill dos usuários atuais e marca os 2 emails como vitalício
+- Sem alteração em RLS (perfil já tem políticas por `user_id`)
