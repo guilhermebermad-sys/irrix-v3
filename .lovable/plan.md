@@ -1,45 +1,28 @@
-# Plano: Teste grátis de 7 dias + tela de pagamento
+## Objetivo
+Inserir os 6 links de checkout Stripe nos lugares corretos: landing page (seção Planos) e página de expiração do teste grátis (`/assinar`).
 
-## Visão geral
-Cada novo usuário ganha 7 dias de acesso completo a partir do cadastro. Após esse período, é redirecionado para uma tela de pagamento (onde depois colocaremos os links Stripe). Duas contas terão acesso vitalício: `guinascifranco@gmail.com` e `irrixapp@gmail.com`.
+## 1. Landing Page — Seção Planos (`src/components/landing/Sections.tsx`)
+- Adicionar `monthlyUrl` e `annualUrl` ao objeto de cada plano (Básico, Pro, Consultor).
+- Alterar o botão CTA de cada card: quando for link externo Stripe, usar `<a>` com `target="_blank" rel="noopener noreferrer"` em vez de `<Link>` interno.
+- O toggle Mensal/Anual já existe; o botão deve apontar para o link correspondente à seleção atual.
+- Ajustar textos dos CTAs para refletir a ação real de assinatura (ex: "Assinar Básico", "Assinar Pro", "Assinar Consultor").
 
-## 1. Banco de dados
-Adicionar colunas em `usuarios_perfil`:
-- `trial_started_at` (timestamptz, default `now()`) — marca início do teste
-- `plano` (text, default `'trial'`) — valores: `trial`, `ativo`, `vitalicio`, `expirado`
-- `acesso_expira_em` (timestamptz) — calculado como `trial_started_at + 7 dias` no trigger
+Links a inserir:
+| Plano | Mensal | Anual |
+|---|---|---|
+| Básico | https://buy.stripe.com/bJe8wPeNZ0nIc672Fb4gg01 | https://buy.stripe.com/dRm6oHcFRgmGc67enT4gg04 |
+| Pro | https://buy.stripe.com/7sY8wP7lxgmGdab93z4gg02 | https://buy.stripe.com/14A9ATbBN9YigmnenT4gg05 |
+| Consultor | https://buy.stripe.com/9B66oH35h0nI1rt4Nj4gg03 | https://buy.stripe.com/00w7sL49l4DYb233Jf4gg06 |
 
-Atualizar `handle_new_user()` para já gravar `trial_started_at = now()` e definir `plano = 'vitalicio'` quando o email for um dos dois autorizados.
+## 2. Página `/assinar` (`src/pages/Assinar.tsx`)
+- Substituir o botão desabilitado "Assinar plano (em breve)" por um link ativo que redireciona o usuário para a seção de planos na landing page (`/landing#planos`).
+- Manter o visual neumórfico consistente.
+- Remover o texto "Em breve os planos estarão disponíveis...".
 
-Backfill via insert tool:
-- Para usuários existentes sem `trial_started_at`: setar = `created_at`
-- Para os 2 emails autorizados: `plano = 'vitalicio'`
+## Fora de escopo
+- Nenhuma alteração de banco de dados, RLS, webhooks ou backend.
+- Não criar nova página de checkout; reaproveita a seção existente da landing.
 
-## 2. Hook de verificação de acesso
-Criar `src/hooks/useAcessoPlano.ts`:
-- Lê `usuarios_perfil` do usuário logado
-- Retorna `{ plano, diasRestantes, expirado, vitalicio, loading }`
-- Lógica: `vitalicio` ou `ativo` → liberado; `trial` → calcula dias restantes; se ≤ 0 → expirado
-
-## 3. Bloqueio de rotas privadas
-Em `src/components/layout/AppLayout.tsx`:
-- Usar o hook; se `expirado` → `<Navigate to="/assinar" replace />`
-- Mostrar banner sutil no `Header` quando em trial com dias restantes (ex: "Teste grátis: 3 dias restantes")
-
-## 4. Tela de pagamento `/assinar`
-Nova página `src/pages/Assinar.tsx` (rota pública pós-login):
-- Visual neumórfico consistente com Login
-- Mostra: "Seu teste de 7 dias terminou" + benefícios + placeholders para os botões/links Stripe (a serem fornecidos depois)
-- Botão "Sair" e link para suporte (`irrixapp@gmail.com`)
-- Quando o usuário enviar os links Stripe, substituímos os placeholders
-
-Adicionar rota em `src/App.tsx`.
-
-## 5. Fora do escopo
-- Webhook Stripe / ativação automática do plano após pagamento (faremos quando os links chegarem)
-- Cobrança recorrente / gestão de assinatura
-
-## Detalhes técnicos
-- Migration cria colunas + atualiza função `handle_new_user`
-- Insert tool faz o backfill dos usuários atuais e marca os 2 emails como vitalício
-- Sem alteração em RLS (perfil já tem políticas por `user_id`)
+## Arquivos alterados
+- `src/components/landing/Sections.tsx`
+- `src/pages/Assinar.tsx`

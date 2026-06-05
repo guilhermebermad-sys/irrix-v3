@@ -326,7 +326,9 @@ const plans = [
   {
     name: "Básico", icon: "🌱", badge: "Para começar",
     monthly: 49, annual: 39,
-    cta: "Começar Grátis por 14 dias", to: "/cadastro",
+    cta: "Assinar Básico",
+    monthlyUrl: "https://buy.stripe.com/bJe8wPeNZ0nIc672Fb4gg01",
+    annualUrl: "https://buy.stripe.com/dRm6oHcFRgmGc67enT4gg04",
     features: [
       [true, "1 Fazenda"], [true, "Até 3 Talhões"],
       [true, "Balanço hídrico diário completo"],
@@ -339,7 +341,9 @@ const plans = [
   {
     name: "Pro", icon: "💧", badge: "Mais Popular", featured: true,
     monthly: 149, annual: 119,
-    cta: "Assinar Plano Pro", to: "/cadastro",
+    cta: "Assinar Pro",
+    monthlyUrl: "https://buy.stripe.com/7sY8wP7lxgmGdab93z4gg02",
+    annualUrl: "https://buy.stripe.com/14A9ATbBN9YigmnenT4gg05",
     features: [
       [true, "Fazendas ilimitadas"], [true, "Talhões ilimitados"],
       [true, "Tudo do Básico"], [true, "Exportação PDF profissional"],
@@ -351,7 +355,9 @@ const plans = [
   {
     name: "Consultor", icon: "🏆", badge: "Para escritórios",
     monthly: 299, annual: 239,
-    cta: "Falar com Especialista", to: "/cadastro",
+    cta: "Assinar Consultor",
+    monthlyUrl: "https://buy.stripe.com/9B66oH35h0nI1rt4Nj4gg03",
+    annualUrl: "https://buy.stripe.com/00w7sL49l4DYb233Jf4gg06",
     features: [
       [true, "Tudo do Pro"], [true, "Múltiplos usuários (até 5 consultores)"],
       [true, "Gestão de clientes/produtores"], [true, "Relatórios com CREA e logotipo"],
@@ -360,6 +366,7 @@ const plans = [
     ] as [boolean, string][],
   },
 ];
+
 
 export function Planos() {
   const [annual, setAnnual] = useState(false);
@@ -393,6 +400,7 @@ export function Planos() {
         <div className="grid md:grid-cols-3 gap-6 mt-12 items-start">
           {plans.map((p, i) => {
             const price = annual ? p.annual : p.monthly;
+            const checkoutUrl = annual ? p.annualUrl : p.monthlyUrl;
             const card = (
               <div className={`neu p-7 rounded-2xl h-full flex flex-col ${p.featured ? "md:scale-105" : ""}`}>
                 {p.badge && (
@@ -420,11 +428,11 @@ export function Planos() {
                   ))}
                 </ul>
 
-                <Link to={p.to}
+                <a href={checkoutUrl} target="_blank" rel="noopener noreferrer"
                   className={`btn-shimmer neu-button w-full text-center px-5 py-3 rounded-xl text-sm font-semibold ${p.featured ? "text-white" : ""}`}
                   style={p.featured ? { background: "var(--gradient-brand)", boxShadow: "0 10px 24px rgba(16,185,129,0.35)" } : {}}>
                   {p.cta}
-                </Link>
+                </a>
               </div>
             );
             return (
@@ -437,6 +445,7 @@ export function Planos() {
               </Reveal>
             );
           })}
+
         </div>
 
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-10 text-xs text-muted-foreground">

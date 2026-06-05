@@ -50,18 +50,17 @@ export default function Assinar() {
           </ul>
 
           <div className="mt-7 space-y-3">
-            {/* Os links de pagamento Stripe serão inseridos aqui posteriormente */}
-            <button
-              type="button"
-              disabled
-              className="w-full py-3.5 rounded-xl font-semibold text-white neu-button opacity-60 cursor-not-allowed"
-              style={{ background: "var(--gradient-brand)" }}>
-              Assinar plano (em breve)
-            </button>
+            <Link
+              to="/landing#planos"
+              className="block w-full text-center py-3.5 rounded-xl font-semibold text-white neu-button btn-shimmer"
+              style={{ background: "var(--gradient-brand)", boxShadow: "0 10px 24px rgba(16,185,129,0.35)" }}>
+              Ver planos e assinar
+            </Link>
             <p className="text-xs text-center text-muted-foreground">
-              Em breve os planos estarão disponíveis. Entre em contato para liberar seu acesso.
+              Escolha o plano ideal e finalize o pagamento com segurança via Stripe.
             </p>
           </div>
+
 
           <div className="mt-7 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
             <a href="mailto:irrixapp@gmail.com" className="flex items-center gap-2 text-primary hover:underline">
