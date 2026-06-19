@@ -451,7 +451,7 @@ export function Planos() {
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-10 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Pagamento seguro</span>
           <span className="inline-flex items-center gap-1.5"><ClipboardList className="w-3.5 h-3.5" /> Cancele quando quiser</span>
-          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> 14 dias grátis sem cartão</span>
+          <span className="inline-flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> 7 dias grátis sem cartão</span>
           <span>🇧🇷 Suporte em português</span>
         </div>
       </div>
@@ -517,7 +517,7 @@ export function CTAFinal() {
                 <span className="text-gradient-brand">inteligência hoje.</span>
               </h2>
               <p className="text-muted-foreground mt-4 text-lg">
-                14 dias grátis. Sem cartão de crédito. Sem complicação.
+                7 dias grátis. Sem cartão de crédito. Sem complicação.
               </p>
               <div className="flex flex-wrap justify-center gap-3 mt-8">
                 <Link to="/cadastro"
