@@ -113,7 +113,7 @@ export default function Cadastro() {
       <main className="flex-1 flex items-center justify-center p-6 md:p-12 bg-background">
         <div className="w-full max-w-md neu p-8 md:p-10 rounded-2xl">
           <h1 className="font-display font-bold text-2xl">Crie sua conta grátis</h1>
-          <p className="text-sm text-muted-foreground mt-1">14 dias grátis · Sem cartão · Cancele quando quiser</p>
+          <p className="text-sm text-muted-foreground mt-1">7 dias grátis · Sem cartão · Cancele quando quiser</p>
 
           <form onSubmit={submit} className="space-y-4 mt-6">
             <Field icon={User} type="text" placeholder="Nome completo" value={nome} onChange={setNome} />
