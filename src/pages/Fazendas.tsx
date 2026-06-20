@@ -136,7 +136,7 @@ export default function Fazendas() {
 
 function Modal({ children, onClose, title }: any) {
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[1100] flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
       <div className="neu max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display text-xl font-bold">{title}</h2>
